@@ -19,7 +19,6 @@ void renderThreadFunc(){
         }
         this_thread::sleep_for(chrono::milliseconds(frameDelay));
     }
-    cout<<"end render\n";
 }
 
 void newGame(SDL_Window* window, SDL_Renderer* renderer, int diffMode){

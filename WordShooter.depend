@@ -1,45 +1,45 @@
 # depslib dependency file v1.0
-1676570576 source:c:\users\hoapr\onedrive\máy tính\wordshooter\game.cpp
+1676572301 source:c:\users\hoapr\onedrive\máy tính\wordshooter\game.cpp
 	"Game.h"
 	"Player.cpp"
 	<bits/stdc++.h>
 
-1676570576 c:\users\hoapr\onedrive\máy tính\wordshooter\game.h
+1676572301 c:\users\hoapr\onedrive\máy tính\wordshooter\game.h
 	<SDL.h>
 
-1676570576 c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
+1676572301 c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
 	"Entity.h"
 	<SDL.h>
 	<bits/stdc++.h>
 
-1676570576 c:\users\hoapr\onedrive\máy tính\wordshooter\entity.h
+1676572301 c:\users\hoapr\onedrive\máy tính\wordshooter\entity.h
 	<iostream>
 	"SDL_utils.h"
 
-1676570576 c:\users\hoapr\onedrive\máy tính\wordshooter\sdl_utils.h
+1676572301 c:\users\hoapr\onedrive\máy tính\wordshooter\sdl_utils.h
 	<iostream>
 	<SDL.h>
 	<SDL_image.h>
 
-1676570576 source:c:\users\hoapr\onedrive\máy tính\wordshooter\gamemenu.cpp
+1676572301 source:c:\users\hoapr\onedrive\máy tính\wordshooter\gamemenu.cpp
 	"GameMenu.h"
 	"Entity.h"
 	"NewGame.h"
 
-1676570576 c:\users\hoapr\onedrive\máy tính\wordshooter\gamemenu.h
+1676572301 c:\users\hoapr\onedrive\máy tính\wordshooter\gamemenu.h
 	"SDL_utils.h"
 
-1676570576 c:\users\hoapr\onedrive\máy tính\wordshooter\newgame.h
+1676572301 c:\users\hoapr\onedrive\máy tính\wordshooter\newgame.h
 	"SDL_utils.h"
 
-1676570576 source:c:\users\hoapr\onedrive\máy tính\wordshooter\main.cpp
+1676572301 source:c:\users\hoapr\onedrive\máy tính\wordshooter\main.cpp
 	<bits/stdc++.h>
 	<SDL.h>
 	"SDL_utils.h"
 	"Game.h"
 	"GameMenu.h"
 
-1676570576 source:c:\users\hoapr\onedrive\máy tính\wordshooter\newgame.cpp
+1676572301 source:c:\users\hoapr\onedrive\máy tính\wordshooter\newgame.cpp
 	<iostream>
 	<SDL.h>
 	"SDL_utils.h"
@@ -48,12 +48,12 @@
 	<thread>
 	<chrono>
 
-1676570576 source:c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
+1676572301 source:c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
 	"Entity.h"
 	<SDL.h>
 	<bits/stdc++.h>
 
-1676570576 source:c:\users\hoapr\onedrive\máy tính\wordshooter\sdl_utils.cpp
+1676572301 source:c:\users\hoapr\onedrive\máy tính\wordshooter\sdl_utils.cpp
 	<iostream>
 	"SDL_utils.h"
 

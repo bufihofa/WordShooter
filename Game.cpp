@@ -65,7 +65,7 @@ void Game::handleEvents(){
         }
     }
     if(!this->isPause() && event.type == SDL_KEYDOWN){
-        cout<<char(event.key.keysym.sym)<<" "<<event.type<<"\n";
+        //cout<<char(event.key.keysym.sym)<<" "<<event.type<<"\n";
         if(event.key.keysym.sym == SDLK_SPACE){
             player.addEnemy(SDL_GetTicks()%1000, 0, "resources/TextBox.png", 5, 0.5);
         }
