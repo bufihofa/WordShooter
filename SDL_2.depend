@@ -1,0 +1,77 @@
+# depslib dependency file v1.0
+1676224744 source:c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\sdl_utils.cpp
+	<iostream>
+	"SDL_utils.h"
+
+1676224744 c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\sdl_utils.h
+	<iostream>
+	<SDL.h>
+	<SDL_image.h>
+
+1676544180 source:c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\game.cpp
+	"Game.h"
+	"Player.cpp"
+	<bits/stdc++.h>
+
+1676546006 c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\game.h
+	<SDL.h>
+
+1676543672 source:c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\main.cpp
+	<bits/stdc++.h>
+	<SDL.h>
+	"SDL_utils.h"
+	"Game.h"
+	"GameMenu.h"
+
+1676540035 c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\entity.h
+	<iostream>
+	"SDL_utils.h"
+
+1676542527 source:c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\player.cpp
+	"Entity.h"
+	<SDL.h>
+	<bits/stdc++.h>
+
+1676542527 c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\player.cpp
+	"Entity.h"
+	<SDL.h>
+	<bits/stdc++.h>
+
+1676271445 source:c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\menu.cpp
+	<iostream>
+	<SDL.h>
+	"SDL_utils.h"
+
+1676546006 source:c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\newgame.cpp
+	<iostream>
+	<SDL.h>
+	"SDL_utils.h"
+	"Game.h"
+	"NewGame.h"
+	<thread>
+	<chrono>
+
+1676271310 c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\menu.cpp
+	<iostream>
+	<SDL.h>
+	"SDL_utils.h"
+
+1676518365 source:c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\gamemenu.cpp
+	"GameMenu.h"
+	"Entity.h"
+	"NewGame.h"
+
+1676271649 c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\gamemenu.cpp
+	"SDL_utils.h"
+
+1676514752 c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\gamemenu.h
+	"SDL_utils.h"
+
+1676544079 c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\newgame.h
+	"SDL_utils.h"
+
+1676447669 c:\users\hoapr\onedrive\máy tính\sdl2_code\sdl_2\game.cpp
+	"Game.h"
+	"Player.cpp"
+	<bits/stdc++.h>
+

@@ -1,0 +1,207 @@
+#include "GameMenu.h"
+#include "Entity.h"
+#include "NewGame.h"
+
+double width, height;
+double XX;
+class mButton: public Entity{
+private:
+    bool isHighlight = false;
+    Point po;
+public:
+    mButton(){}
+    mButton(double x, double y, string path, SDL_Renderer* renderer, double scl, bool center){
+        setXY(x, y);
+        setRenderer(renderer);
+        loadIMG(path);
+        SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
+        setHW(getPos().h, getPos().w);
+        this->setScale(scl);
+        if(center) this->setCenterX(width);
+    }
+    bool isHL(){return isHighlight;}
+    void HL(){
+        if(!isHighlight){
+            this->setScale(1.15);
+            isHighlight = true;
+        }
+    }
+    void unHL(){
+        if(isHighlight){
+            this->setScale(100.0/115.0);
+            isHighlight = false;
+        }
+    }
+};
+void playButtonClicked(SDL_Window* window, SDL_Renderer* renderer, double _x, double _y){
+    SDL_Texture* background = loadTexture("resources/MenuBackGround.png", renderer);
+
+    mButton menuPanel = mButton(0, height/4, "resources/MenuPanel.png", renderer, height/400, true);
+    menuPanel.setAC(width/2.0, height/2.0);
+
+    mButton diffPanel = mButton(0, 0, "resources/DiffPanel.png", renderer, height/600, true);
+    diffPanel.setH(diffPanel.getH()/1.5);
+    diffPanel.setAC(width/2.0, height/2.0);
+
+    mButton easyMode = mButton(50, 250, "resources/EasyMode.png", renderer, 0.8, false);
+    mButton mediumMode = mButton(250, 250, "resources/MediumMode.png", renderer, 0.8, true);
+    mButton hardMode = mButton(750, 250, "resources/HardMode.png", renderer, 0.8, false);
+
+    mButton textDiff = mButton(50, 190, "resources/select.png", renderer, 1, true);
+
+    mButton quitButton_img = mButton(900, -20, "resources/CloseButton.png", renderer, 0.15, false);
+
+    Entity snip = Entity(0, 300, "resources/pointer.png", renderer);
+    snip.setScale(height/1500);
+    snip.setAC(_x , _y);
+    snip.render2();
+
+    bool running = true;
+    SDL_Event ev;
+    SDL_RenderPresent(renderer);
+    while(running){
+        while(SDL_PollEvent(&ev) != 0){
+            if(ev.type == SDL_QUIT)
+                running = false;
+            else if(ev.type == SDL_MOUSEMOTION){
+                snip.setAC(ev.button.x , ev.button.y);
+                quitButton_img.unHL();
+                easyMode.unHL();
+                mediumMode.unHL();
+                hardMode.unHL();
+                if(easyMode.isClicked(ev.button.x, ev.button.y)){
+                    easyMode.HL();
+                }
+                else if(mediumMode.isClicked(ev.button.x, ev.button.y)){
+                    mediumMode.HL();
+                }
+                else if(hardMode.isClicked(ev.button.x, ev.button.y)){
+                    hardMode.HL();
+                }
+                else if(quitButton_img.isClicked(ev.button.x, ev.button.y)){
+                    quitButton_img.HL();
+                }
+            }
+            else if(ev.type == SDL_MOUSEBUTTONDOWN){
+                if(easyMode.isClicked(ev.button.x, ev.button.y)){
+                    newGame(window, renderer, 1);
+                    return;
+                }
+                else if(mediumMode.isClicked(ev.button.x, ev.button.y)){
+                    newGame(window, renderer, 2);
+                    return;
+                }
+                else if(hardMode.isClicked(ev.button.x, ev.button.y)){
+                    newGame(window, renderer, 3);
+                    return;
+                }
+                else if(quitButton_img.isClicked(ev.button.x, ev.button.y)){
+                    openGameMenu(window, renderer, ev.button.x, ev.button.y, width, height);
+                    return;
+                }
+            }
+        }
+        SDL_RenderCopy(renderer, background, NULL, NULL);
+
+        menuPanel.render();
+        diffPanel.render();
+        textDiff.render();
+
+        easyMode.render();
+        mediumMode.render();
+        hardMode.render();
+
+        quitButton_img.render();
+
+        snip.setAngle(snip.getAngle()+1);
+        snip.render2();
+
+        SDL_RenderPresent(renderer);
+    }
+
+    cout<<"Diff Open\n";
+}
+void openGameMenu(SDL_Window* window, SDL_Renderer* renderer, double _x, double _y, int _wid, int _hei){
+    width = _wid;
+    height = _hei;
+
+    SDL_Texture* background = loadTexture("resources/MenuBackGround.png", renderer);
+
+    mButton menuPanel = mButton(0, 0, "resources/MenuPanel.png", renderer, 2, true);
+    menuPanel.setAC(width/2.0, height/2.0);
+
+    mButton playButton_img = mButton(0, height/4, "resources/PlayButton.png", renderer, height/700, true);
+    mButton settingButton_img = mButton(0, height/2.5, "resources/SettingButton.png", renderer, height/800, true);
+    mButton guideButton_img = mButton(0, height/2, "resources/GuideButton.png", renderer, height/800, true);
+    mButton quitButton_img = mButton(0, height/1.5, "resources/QuitButton.png", renderer, height/800, true);
+
+    Entity snip = Entity(-1000, -1000, "resources/pointer.png", renderer);
+    snip.setScale(height/1500);
+    snip.setAC(_x , _y);
+    snip.render2();
+
+    SDL_RenderPresent(renderer);
+
+    bool running = true;
+    SDL_Event ev;
+    while(running){
+        while(SDL_PollEvent(&ev) != 0){
+            if(ev.type == SDL_QUIT)
+                running = false;
+            else if(ev.type == SDL_MOUSEMOTION){
+                snip.setAC(ev.button.x , ev.button.y);
+                quitButton_img.unHL();
+                playButton_img.unHL();
+                settingButton_img.unHL();
+                guideButton_img.unHL();
+                if(playButton_img.isClicked(ev.button.x, ev.button.y)) {
+                    playButton_img.HL();
+                }
+                else if(settingButton_img.isClicked(ev.button.x, ev.button.y)){
+                    settingButton_img.HL();
+                }
+                else if(guideButton_img.isClicked(ev.button.x, ev.button.y)){
+                    guideButton_img.HL();
+                }
+                else if(quitButton_img.isClicked(ev.button.x, ev.button.y)){
+                    quitButton_img.HL();
+                }
+
+            }
+            else if(ev.type == SDL_MOUSEBUTTONDOWN){
+                if(playButton_img.isClicked(ev.button.x, ev.button.y)){
+                    playButtonClicked(window, renderer, ev.button.x, ev.button.y);
+                    return;
+                }
+                else if(settingButton_img.isClicked(ev.button.x, ev.button.y)){
+                    //
+                }
+                else if(guideButton_img.isClicked(ev.button.x, ev.button.y)){
+                    //
+                }
+                else if(quitButton_img.isClicked(ev.button.x, ev.button.y)){
+                    ev.type = SDL_QUIT;
+                    return;
+                }
+            }
+        }
+
+        SDL_RenderClear(renderer);
+
+        SDL_RenderCopy(renderer, background, NULL, NULL);
+
+        menuPanel.render();
+
+        playButton_img.render();
+        settingButton_img.render();
+        guideButton_img.render();
+        quitButton_img.render();
+
+        snip.setAngle(snip.getAngle()+1);
+        snip.render2();
+
+        SDL_RenderPresent(renderer);
+    }
+}
+
+
