@@ -33,6 +33,7 @@ class Entity{
 private:
     Point pos_d;
     SDL_Rect pos;
+    SDL_Rect pos_c;
     SDL_Renderer* renderer;
 	SDL_Texture* image;
 	double angle = 0;
@@ -105,11 +106,12 @@ public:
         SDL_RenderCopyEx(renderer, image, NULL, &pos, angle, NULL, SDL_FLIP_NONE);
     }
     void renderCenter(){
-        addX(-getW()/2);
-        addY(-getH()/2);
-        SDL_RenderCopyEx(renderer, image, NULL, &pos, angle, NULL, SDL_FLIP_NONE);
-        addX(getW()/2);
-        addY(getH()/2);
+        pos_c.h = getH();
+        pos_c.w = getW();
+        pos_c.x = getX()-pos.w/2.0;
+        pos_c.y = getY()-pos.h/2.0;
+        SDL_RenderCopyEx(renderer, image, NULL, &pos_c, angle, NULL, SDL_FLIP_NONE);
+
     }
     void setPos(double x, double y, double h, double w){
         pos.x=x;
@@ -120,7 +122,6 @@ public:
     void setCenterX(double _w)  {this->setX(_w/2 - this->getW()/2);}
     void setRenderer(SDL_Renderer* renderer)    {this->renderer = renderer;}
     void setImage(SDL_Texture* image)   {this->image = image;}
-
 
     SDL_Renderer* getRenderer() {return renderer;}
     SDL_Texture* getImage() {return image;}

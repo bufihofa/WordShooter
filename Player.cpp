@@ -1,9 +1,12 @@
 #ifndef PLAYER__CPP
 #define PLAYER__CPP
-
+#include "NewWord.h"
 #include "Entity.h"
 #include <SDL.h>
 #include <bits/stdc++.h>
+
+
+
 class moveEntity: public Entity{
 private:
     double speed = 20;
@@ -60,55 +63,54 @@ public:
     }
 
 };
-class Bullet: public Entity{
+class Bullet: public moveEntity{
 private:
     double speed = 40;
-    double frameSpeed = 30;
-    int numberOfFrame = 4;
+    int numberOfFrame = 10;
     int nowFrame = 0;
     vector<SDL_Texture* > Animation;
 public:
 
-    void loadAnimation(int _numberOfFrame, int _frameSpeed, string _path){
-        numberOfFrame = _numberOfFrame;
-        frameSpeed = _frameSpeed;
+    void loadAnimation(string _path){
         for(int i=0;i<numberOfFrame;i++){
             Animation.push_back(loadTexture(_path + "_" + char(i+48) + ".png", getRenderer()));
             SDL_QueryTexture(Animation[i], NULL, NULL, &getPos().w, &getPos().h);
         }
-        this->setScale(0.5);
+        setHW(20, 20);
     }
 
     Bullet(){}
-    Bullet(double x, double y, string path, SDL_Renderer* renderer){
+    Bullet(double x, double y, double toX, double toY, string path, SDL_Renderer* renderer){
         setXY(x, y);
+        setToXY(toX, toY);
         setRenderer(renderer);
-        loadAnimation(4, 30, path);
-
-        loadIMG(path+ "_" + char(48) + ".png");
-        SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
-        setHW(getPos().h, getPos().w);
+        loadAnimation(path);
+        //loadIMG(path+ "_" + char(48) + ".png");
+        //SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
+        //setHW(getPos().h, getPos().w);
     }
 
 
     double getSpeed(){return this->speed;}
     void setSpeed(double speed){this->speed = speed;}
-    double getFrameSpeed(){return frameSpeed;}
     int getNumberOfFrame(){return numberOfFrame;}
-    void setFrameSpeed(double frameSpeed)   {this->frameSpeed = frameSpeed;}
     void nextFrame(){
         nowFrame++;
-        nowFrame %= (numberOfFrame*3);
-        setImage(Animation[nowFrame/3]);
+        nowFrame %= (numberOfFrame*5);
+        setImage(Animation[nowFrame/5]);
+    }
+    void update2(){
+        this->addX(-0.001*(getOldX()-getToX())*getSpeed());
+        this->addY(-0.001*(getOldY()-getToY())*getSpeed());
     }
 };
 class Enemy: public moveEntity{
 private:
-    queue<char> word;
-    //Entity
+    deque<char> word;
+    Entity wordBox;
 public:
     Enemy(){}
-    Enemy(double x, double y, double _x, double _y, string path, double speed, double scale, SDL_Renderer* renderer){
+    Enemy(double x, double y, double _x, double _y, string path, double speed, double scale, SDL_Renderer* renderer, double angle){
         setXY(_x, _y);
         setToXY(x, y);
         setRenderer(renderer);
@@ -117,14 +119,27 @@ public:
         setHW(getPos().h, getPos().w);
         setSpeed(speed);
         setScale(scale);
+        wordBox = Entity(getX(), getY(), "resources/WordBox.png", renderer);
+        wordBox.setScale(0.7);
+        this->setAngle(angle);
 
+        string s = getNewWord(1);
+        cout<<s<<"\n";
+        for(int i=0;i<s.size();++i){
+            word.push_back(s[i]);
+        }
     }
+
     void update2(){
-        this->addX(-0.005*(getOldX()-getToX()));
-        this->addY(-0.005*(getOldY()-getToY()));
+        this->addX(-0.001*(getOldX()-getToX())*getSpeed());
+        this->addY(-0.001*(getOldY()-getToY())*getSpeed());
     }
     bool outOfRange(){
         return getY()>700;
+    }
+    void renderWordBox(){
+        wordBox.setAC(getX(), getY()-getH()/2-10);
+        wordBox.render();
     }
 };
 class Player: public Entity{
@@ -140,12 +155,13 @@ public:
         SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
         setHW(getPos().h, getPos().w);
     }
-    void addEnemy(double _x, double _y, string path, double speed, double scale){
-        ene.push_back(Enemy(_x, 750, _x, _y, path, speed, scale, getRenderer()));
+    void addEnemy(double _x, double _y, string path, double speed, double scale, double angle){
+        ene.push_back(Enemy(_x, 750, _x, _y, path, speed, scale, getRenderer(), angle));
     }
     void renderEnemy(){
         for(int i=0;i<ene.size();i++){
-             ene.at(i).render();
+             ene.at(i).renderCenter();
+             ene.at(i).renderWordBox();
              //cout<<i<<" rendered\n";
         }
     }
@@ -158,16 +174,17 @@ public:
     }
     double getPX(){
         if(ene.size()>0)
-        return ene.at(0).getX()+ene.at(0).getW()/2;
+        return ene.at(0).getX();
         return 600;
     }
     double getPY(){
         if(ene.size()>0)
-        return ene.at(0).getY()+ene.at(0).getH();
+        return ene.at(0).getY()+20;
         return 400;
     }
-    void shootBullet(){
-        bull.push_back(Bullet(0, 0, "resources/Pu", getRenderer()));
+    void shootBullet(int key){
+        bull.push_back(Bullet(getCenterX(), getCenterY(), getPX(), getPY(), "resources/bulletanimation/bullet", getRenderer()));
+
 
     }
     void renderBullet(){
@@ -177,7 +194,7 @@ public:
     }
     void updateBullet(){
         for(int i=0;i<bull.size();i++){
-            bull.at(i).addX(bull.at(i).getSpeed());
+            bull.at(i).update2();
             bull.at(i).nextFrame();
         }
     }

@@ -4,6 +4,7 @@
 using namespace std;
 
 Player player;
+
 Entity bgr, pauseButton, faqButton, settingButton, menuButton;
 Entity pausetext;
 double startTime = 0;
@@ -35,7 +36,7 @@ Game::Game(SDL_Window* window, SDL_Renderer* renderer){
     menuButton.setScale(0.3);
 
     point = moveEntity(500, 500, "resources/pointer.png", renderer);
-    point.setScale(0.5);
+    point.setScale(0.3);
 
     startTime = SDL_GetTicks();
 }
@@ -67,9 +68,12 @@ void Game::handleEvents(){
     if(!this->isPause() && event.type == SDL_KEYDOWN){
         //cout<<char(event.key.keysym.sym)<<" "<<event.type<<"\n";
         if(event.key.keysym.sym == SDLK_SPACE){
-            player.addEnemy(SDL_GetTicks()%1000, 0, "resources/TextBox.png", 5, 0.5);
+            player.addEnemy(SDL_GetTicks()%1000, 0, "resources/HardShip.png", 1.5, 0.3, 180);
         }
-        this->render();
+        if(event.key.keysym.sym >= SDLK_a && event.key.keysym.sym <= SDLK_z){
+            player.shootBullet(event.key.keysym.sym);
+        }
+
     }
 
 }

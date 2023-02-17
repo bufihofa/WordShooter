@@ -39,6 +39,8 @@
 		<Unit filename="GameMenu.h" />
 		<Unit filename="NewGame.cpp" />
 		<Unit filename="NewGame.h" />
+		<Unit filename="NewWord.cpp" />
+		<Unit filename="NewWord.h" />
 		<Unit filename="Player.cpp" />
 		<Unit filename="SDL_utils.cpp" />
 		<Unit filename="SDL_utils.h" />
