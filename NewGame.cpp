@@ -13,11 +13,14 @@ void renderThreadFunc(){
 
     int FPS = 60;
     int frameDelay = 1000 / FPS;
+    int frameTime = 0;
     while(game->isRunning()){
+        frameTime = SDL_GetTicks();
         if(!game->isPause()){
             game->render();
         }
-        this_thread::sleep_for(chrono::milliseconds(frameDelay));
+        frameTime = SDL_GetTicks() - frameTime;
+        this_thread::sleep_for(chrono::milliseconds(frameDelay-frameTime));
     }
 }
 
@@ -26,18 +29,19 @@ void newGame(SDL_Window* window, SDL_Renderer* renderer, int diffMode){
     game = new Game(window, renderer);
     thread renderThread(renderThreadFunc);
 
-    int UPS = 65;
+    int UPS = 60;
     int updateDelay = 1000 / UPS;
-
+    int updateTime = 0;
     while(game->isRunning()){
+        updateTime = SDL_GetTicks();
         game->handleEvents();
 
         if(!game->isPause()){
             game->handleEvents();
             game->update();
         }
-
-        this_thread::sleep_for(chrono::milliseconds(updateDelay));
+        updateTime = SDL_GetTicks() - updateTime;
+        this_thread::sleep_for(chrono::milliseconds(updateDelay-updateTime));
 
 
     }

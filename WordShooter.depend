@@ -7,7 +7,7 @@
 1676572301 c:\users\hoapr\onedrive\máy tính\wordshooter\game.h
 	<SDL.h>
 
-1676614051 c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
+1676617110 c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
 	"NewWord.h"
 	"Entity.h"
 	<SDL.h>
@@ -40,7 +40,7 @@
 	"Game.h"
 	"GameMenu.h"
 
-1676572399 source:c:\users\hoapr\onedrive\máy tính\wordshooter\newgame.cpp
+1676616325 source:c:\users\hoapr\onedrive\máy tính\wordshooter\newgame.cpp
 	<iostream>
 	<SDL.h>
 	"SDL_utils.h"
@@ -49,7 +49,7 @@
 	<thread>
 	<chrono>
 
-1676613980 source:c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
+1676616198 source:c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
 	"NewWord.h"
 	"Entity.h"
 	<SDL.h>

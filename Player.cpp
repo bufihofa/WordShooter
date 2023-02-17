@@ -14,6 +14,7 @@ private:
     double toY = 0;
     double oldX = 0;
     double oldY = 0;
+    double delta = 0;
 public:
     moveEntity(){}
     moveEntity(double x, double y, string path, SDL_Renderer* renderer){
@@ -23,6 +24,13 @@ public:
         loadIMG(path);
         SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
         setHW(getPos().h, getPos().w);
+        setDelta();
+    }
+    void setDelta(){
+        delta = speed/sqrt((toX-oldX)*(toX-oldX)+(toY-oldY)*(toY-oldY));
+    }
+    double getDelta(){
+        return this->delta;
     }
     double getPercent(){
         return (sqrt((getX() - toX)*(getX() - toX)+(getY() - toY)*(getY() - toY))/sqrt((toX - oldX)*(toX - oldX)+(toY - oldY)*(toY - oldY)));
@@ -85,6 +93,7 @@ public:
         setToXY(toX, toY);
         setRenderer(renderer);
         loadAnimation(path);
+        this->setDelta();
         //loadIMG(path+ "_" + char(48) + ".png");
         //SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
         //setHW(getPos().h, getPos().w);
@@ -99,9 +108,12 @@ public:
         nowFrame %= (numberOfFrame*5);
         setImage(Animation[nowFrame/5]);
     }
-    void update2(){
-        this->addX(-0.001*(getOldX()-getToX())*getSpeed());
-        this->addY(-0.001*(getOldY()-getToY())*getSpeed());
+    void update3(){
+        this->addX(-1*(getOldX()-getToX())*getDelta());
+        this->addY(-1*(getOldY()-getToY())*getDelta());
+    }
+    bool isHitted(){
+        return (getY()<getToY());
     }
 };
 class Enemy: public moveEntity{
@@ -122,7 +134,7 @@ public:
         wordBox = Entity(getX(), getY(), "resources/WordBox.png", renderer);
         wordBox.setScale(0.7);
         this->setAngle(angle);
-
+        this->setDelta();
         string s = getNewWord(1);
         cout<<s<<"\n";
         for(int i=0;i<s.size();++i){
@@ -141,10 +153,13 @@ public:
         wordBox.setAC(getX(), getY()-getH()/2-10);
         wordBox.render();
     }
+    bool checkKey(int key){
+        return (word.at(0)==key);
+    }
 };
 class Player: public Entity{
 private:
-    vector<Bullet> bull;
+    deque<Bullet> bull;
     deque<Enemy> ene;
 public:
     Player(){}
@@ -183,8 +198,9 @@ public:
         return 400;
     }
     void shootBullet(int key){
-        bull.push_back(Bullet(getCenterX(), getCenterY(), getPX(), getPY(), "resources/bulletanimation/bullet", getRenderer()));
 
+        bull.push_back(Bullet(getCenterX(), getCenterY(), getPX(), getPY(), "resources/bulletanimation/bullet", getRenderer()));
+        //
 
     }
     void renderBullet(){
@@ -194,8 +210,9 @@ public:
     }
     void updateBullet(){
         for(int i=0;i<bull.size();i++){
-            bull.at(i).update2();
+            bull.at(i).update3();
             bull.at(i).nextFrame();
+            if(bull.at(i).isHitted()) bull.pop_front();
         }
     }
 };
