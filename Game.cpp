@@ -72,6 +72,7 @@ void Game::handleEvents(){
         }
         if(event.key.keysym.sym >= SDLK_a && event.key.keysym.sym <= SDLK_z){
             player.shootBullet(event.key.keysym.sym);
+
         }
 
     }

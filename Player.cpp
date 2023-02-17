@@ -154,7 +154,13 @@ public:
         wordBox.render();
     }
     bool checkKey(int key){
-        return (word.at(0)==key);
+        return (word.at(0)==int(key));
+    }
+    void remKey(){
+        word.pop_front();
+    }
+    bool isAlive(){
+        return(word.size()>0);
     }
 };
 class Player: public Entity{
@@ -198,8 +204,17 @@ public:
         return 400;
     }
     void shootBullet(int key){
+        for(int i=0;i<ene.size();++i){
+            if(ene.at(i).checkKey(key)) {
+                bull.push_back(Bullet(getCenterX(), getCenterY(), ene.at(i).getX(), ene.at(i).getY(), "resources/bulletanimation/bullet", getRenderer()));
+                ene.at(i).remKey();
+                if(!ene.at(i).isAlive()){
+                    ene.pop_front();
+                }
+                break;
+            }
+        }
 
-        bull.push_back(Bullet(getCenterX(), getCenterY(), getPX(), getPY(), "resources/bulletanimation/bullet", getRenderer()));
         //
 
     }
@@ -212,7 +227,9 @@ public:
         for(int i=0;i<bull.size();i++){
             bull.at(i).update3();
             bull.at(i).nextFrame();
-            if(bull.at(i).isHitted()) bull.pop_front();
+            if(bull.at(i).isHitted()){
+                bull.pop_front();
+            }
         }
     }
 };
