@@ -71,11 +71,75 @@ public:
     }
 
 };
+
+class Enemy: public moveEntity{
+private:
+    deque<char> word;
+    Entity wordBox;
+    int dmg = 0;
+    int hp = 0;;
+public:
+    Enemy(){}
+    Enemy(double x, double y, double _x, double _y, string path, double speed, double scale, SDL_Renderer* renderer, double angle){
+        setXY(_x, _y);
+        setToXY(x, y);
+        setRenderer(renderer);
+        loadIMG(path);
+        SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
+        setHW(getPos().h, getPos().w);
+        setSpeed(speed);
+        setScale(scale);
+        wordBox = Entity(getX(), getY(), "resources/WordBox.png", renderer);
+        wordBox.setScale(0.7);
+        this->setAngle(angle);
+        this->setDelta();
+        string s = getNewWord(1);
+        cout<<s<<"\n";
+        hp = s.size();
+        for(int i=0;i<s.size();++i){
+            word.push_back(s[i]);
+        }
+    }
+
+    void update2(){
+        this->addX(-0.001*(getOldX()-getToX())*getSpeed());
+        this->addY(-0.001*(getOldY()-getToY())*getSpeed());
+    }
+    bool outOfRange(){
+        return getY()>700;
+    }
+    void renderWordBox(){
+        wordBox.setAC(getX(), getY()-getH()/2-10);
+        wordBox.render();
+    }
+    bool checkKey(int key){
+        if(word.empty()) return false;
+        return (word.at(0)==int(key));
+    }
+    void addDmg(){
+        dmg++;
+    }
+    int getDmg(){
+        return dmg;
+    }
+    int getHp(){
+        return hp;
+    }
+    void remKey(){
+        if(!word.empty()){
+            word.pop_front();
+        }
+    }
+    bool isAlive(){
+        return(dmg<hp);
+    }
+};
 class Bullet: public moveEntity{
 private:
-    double speed = 40;
+    double speed = 200;
     int numberOfFrame = 10;
     int nowFrame = 0;
+    int id = 0;
     vector<SDL_Texture* > Animation;
 public:
 
@@ -86,17 +150,17 @@ public:
         }
         setHW(20, 20);
     }
-
+    int getID(){
+        return this->id;
+    }
     Bullet(){}
-    Bullet(double x, double y, double toX, double toY, string path, SDL_Renderer* renderer){
+    Bullet(double x, double y, double toX, double toY, string path, SDL_Renderer* renderer, int _id){
+        id = _id;
         setXY(x, y);
         setToXY(toX, toY);
         setRenderer(renderer);
         loadAnimation(path);
         this->setDelta();
-        //loadIMG(path+ "_" + char(48) + ".png");
-        //SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
-        //setHW(getPos().h, getPos().w);
     }
 
 
@@ -116,57 +180,14 @@ public:
         return (getY()<getToY());
     }
 };
-class Enemy: public moveEntity{
-private:
-    deque<char> word;
-    Entity wordBox;
-public:
-    Enemy(){}
-    Enemy(double x, double y, double _x, double _y, string path, double speed, double scale, SDL_Renderer* renderer, double angle){
-        setXY(_x, _y);
-        setToXY(x, y);
-        setRenderer(renderer);
-        loadIMG(path);
-        SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
-        setHW(getPos().h, getPos().w);
-        setSpeed(speed);
-        setScale(scale);
-        wordBox = Entity(getX(), getY(), "resources/WordBox.png", renderer);
-        wordBox.setScale(0.7);
-        this->setAngle(angle);
-        this->setDelta();
-        string s = getNewWord(1);
-        cout<<s<<"\n";
-        for(int i=0;i<s.size();++i){
-            word.push_back(s[i]);
-        }
-    }
-
-    void update2(){
-        this->addX(-0.001*(getOldX()-getToX())*getSpeed());
-        this->addY(-0.001*(getOldY()-getToY())*getSpeed());
-    }
-    bool outOfRange(){
-        return getY()>700;
-    }
-    void renderWordBox(){
-        wordBox.setAC(getX(), getY()-getH()/2-10);
-        wordBox.render();
-    }
-    bool checkKey(int key){
-        return (word.at(0)==int(key));
-    }
-    void remKey(){
-        word.pop_front();
-    }
-    bool isAlive(){
-        return(word.size()>0);
-    }
-};
 class Player: public Entity{
 private:
-    deque<Bullet> bull;
-    deque<Enemy> ene;
+    Bullet* bullet[51];
+    Enemy* enemy[51];
+    int bullet_status[51];
+    int enemy_status[51];
+    int numberOfEnemy = 0;
+    int target_id = 0;
 public:
     Player(){}
     Player(double x, double y, string path, SDL_Renderer* renderer){
@@ -175,60 +196,129 @@ public:
         loadIMG(path);
         SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
         setHW(getPos().h, getPos().w);
+        for(int i=0;i<=50;++i){
+            bullet[i] = new Bullet();
+            enemy[i] = new Enemy();
+            bullet_status[i] = 0;
+            enemy_status[i] = 0;
+        }
+    }
+    int findNearestEnemy(){
+        int _max = INT_MIN;
+        int _id = 0;
+        for(int i=0;i<=50;++i){
+            if(enemy_status[i] == 1) {
+                if(enemy[i]->getY() >= _max){
+
+                    _max = enemy[i]->getY();
+                    _id = i;
+                }
+            }
+        }
+        return _id;
+    }
+    int findEnemyEmpty(){
+        for(int i=0;i<=50;++i){
+            if(enemy_status[i] == 0) return i;
+        }
+    }
+    void removeEnemy(int id){
+        enemy_status[id] = 0;
+        numberOfEnemy--;
     }
     void addEnemy(double _x, double _y, string path, double speed, double scale, double angle){
-        ene.push_back(Enemy(_x, 750, _x, _y, path, speed, scale, getRenderer(), angle));
+        int id = findEnemyEmpty();
+        enemy[id] = new Enemy(_x, 750, _x, _y, path, speed, scale, getRenderer(), angle);
+        enemy_status[id] = 1;
+        numberOfEnemy++;
     }
     void renderEnemy(){
-        for(int i=0;i<ene.size();i++){
-             ene.at(i).renderCenter();
-             ene.at(i).renderWordBox();
-             //cout<<i<<" rendered\n";
+        for(int i=0;i<=50;++i){
+            if(enemy_status[i] == 1){
+                enemy[i]->renderCenter();
+                enemy[i]->renderWordBox();
+            }
         }
     }
     void updateEnemy(){
-        for(int i=0;i<ene.size();i++){
-            ene.at(i).update2();
-            //ene.at(i).nextFrame();
-            if(ene.at(i).outOfRange()) ene.pop_front();
+        for(int i=0;i<=50;++i){
+            if(enemy_status[i] == 1){
+                enemy[i]->update2();
+                if(enemy[i]->outOfRange()) {
+                    removeEnemy(i);
+                }
+            }
         }
     }
     double getPX(){
-        if(ene.size()>0)
-        return ene.at(0).getX();
+        if(numberOfEnemy>0){
+            if(enemy_status[target_id] == 0) target_id = findNearestEnemy();
+            return enemy[target_id]->getX();
+        }
         return 600;
     }
     double getPY(){
-        if(ene.size()>0)
-        return ene.at(0).getY()+20;
+        if(numberOfEnemy>0){
+            if(enemy_status[target_id] == 0) target_id = findNearestEnemy();
+            return enemy[target_id]->getY();
+        }
         return 400;
     }
+
+    int findBulletEmpty(){
+        for(int i=0;i<=50;++i){
+            if(bullet_status[i] == 0) return i;
+        }
+    }
+    void removeBullet(int id){
+        bullet_status[id] = 0;
+    }
     void shootBullet(int key){
-        for(int i=0;i<ene.size();++i){
-            if(ene.at(i).checkKey(key)) {
-                bull.push_back(Bullet(getCenterX(), getCenterY(), ene.at(i).getX(), ene.at(i).getY(), "resources/bulletanimation/bullet", getRenderer()));
-                ene.at(i).remKey();
-                if(!ene.at(i).isAlive()){
-                    ene.pop_front();
+        if(enemy_status[target_id] == 1) {
+            int i = target_id;
+            if(enemy[i]->checkKey(key)) {
+                target_id = i;
+                int id = findBulletEmpty();
+                bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY(), "resources/bulletanimation/bullet", getRenderer(), i);
+                bullet_status[id] = 1;
+                enemy[i]->remKey();
+                return;
+            }
+        }
+        for(int i=0;i<=50;++i){
+            if(enemy_status[i] == 1){
+                if(enemy[i]->checkKey(key)) {
+                    target_id = i;
+                    int id = findBulletEmpty();
+                    bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY(), "resources/bulletanimation/bullet", getRenderer(), i);
+                    bullet_status[id] = 1;
+                    enemy[i]->remKey();
+                    break;
                 }
-                break;
             }
         }
 
-        //
-
     }
     void renderBullet(){
-        for(int i=0;i<bull.size();i++){
-             bull.at(i).render();
+        for(int i=0;i<=50;++i){
+            if(bullet_status[i] == 1){
+                bullet[i]->render();
+            }
         }
     }
     void updateBullet(){
-        for(int i=0;i<bull.size();i++){
-            bull.at(i).update3();
-            bull.at(i).nextFrame();
-            if(bull.at(i).isHitted()){
-                bull.pop_front();
+        for(int i=0;i<=50;++i){
+            if(bullet_status[i] == 1){
+                bullet[i]->update3();
+                bullet[i]->nextFrame();
+                if(bullet[i]->isHitted()){
+                    enemy[bullet[i]->getID()]->addDmg();
+                    if(!enemy[bullet[i]->getID()]->isAlive()) {
+                        cout<<"KILLED\n";
+                        removeEnemy(bullet[i]->getID());
+                    }
+                    removeBullet(i);
+                }
             }
         }
     }
