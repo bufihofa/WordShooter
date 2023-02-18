@@ -21,8 +21,7 @@ int main(int argc, char* argv[])
     initSDL(window, renderer, SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE);
 
     //Open Game Menu -> GameMenu.cpp
-    openGameMenu(window, renderer, -1000, -1000, SCREEN_WIDTH, SCREEN_HEIGHT);
-
+    openMenu(window,renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
     quitSDL(window, renderer);
     return 0;
 }

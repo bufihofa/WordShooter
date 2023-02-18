@@ -125,7 +125,11 @@ public:
     SDL_Texture* getImage() {return image;}
     SDL_Rect& getPos()  {return pos;}
 
-
+    void clearEntity(){
+        SDL_DestroyTexture(image);
+        renderer = NULL;
+        image = NULL;
+    }
 };
 
 

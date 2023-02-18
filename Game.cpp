@@ -53,7 +53,7 @@ void Game::gameContinue(){
 void Game::gameStop(){
     this->pau();
     this->stop();
-    openGameMenu(window, renderer, -1000, -1000, 1200, 800);
+    openMenu(window,renderer, 1200, 800);
 }
 void Game::handleEvents(){
     SDL_Event event;

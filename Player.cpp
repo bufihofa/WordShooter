@@ -81,6 +81,9 @@ private:
     int hp = 0;;
 public:
     Enemy(){}
+    ~Enemy(){
+
+    }
     Enemy(double x, double y, double _x, double _y, string path, double speed, double scale, SDL_Renderer* renderer, double angle){
         setXY(_x, _y);
         setToXY(x, y);
@@ -138,7 +141,7 @@ public:
 class Bullet: public moveEntity{
 private:
     double speed = 200;
-    int numberOfFrame = 10;
+    int numberOfFrame = 1;
     int nowFrame = 0;
     int id = 0;
     vector<SDL_Texture* > Animation;
@@ -160,9 +163,13 @@ public:
         setXY(x, y);
         setToXY(toX, toY);
         setRenderer(renderer);
-        loadAnimation(path);
+        //loadAnimation(path);
+        loadIMG(path + "_0.png");
+        SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
+        setHW(20, 20);
         this->setDelta();
     }
+
 
 
     double getSpeed(){return this->speed;}
@@ -229,6 +236,7 @@ public:
     }
     void addEnemy(double _x, double _y, string path, double speed, double scale, double angle){
         int id = findEnemyEmpty();
+        enemy[id]->clearEntity();
         enemy[id] = new Enemy(_x, 750, _x, _y, path, speed, scale, getRenderer(), angle);
         enemy_status[id] = 1;
         numberOfEnemy++;
@@ -280,6 +288,7 @@ public:
             if(enemy[i]->checkKey(key)) {
                 target_id = i;
                 int id = findBulletEmpty();
+                bullet[id]->clearEntity();
                 bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY(), "resources/bulletanimation/bullet", getRenderer(), i);
                 bullet_status[id] = 1;
                 enemy[i]->remKey();
@@ -291,6 +300,7 @@ public:
                 if(enemy[i]->checkKey(key)) {
                     target_id = i;
                     int id = findBulletEmpty();
+                    bullet[id]->clearEntity();
                     bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY(), "resources/bulletanimation/bullet", getRenderer(), i);
                     bullet_status[id] = 1;
                     enemy[i]->remKey();
@@ -311,7 +321,7 @@ public:
         for(int i=0;i<=50;++i){
             if(bullet_status[i] == 1){
                 bullet[i]->update3();
-                bullet[i]->nextFrame();
+                //bullet[i]->nextFrame();
                 if(bullet[i]->isHitted()){
                     enemy[bullet[i]->getID()]->addDmg();
                     if(!enemy[bullet[i]->getID()]->isAlive()) {
