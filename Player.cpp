@@ -200,11 +200,32 @@ private:
     int numberOfEnemy = 0;
     int target_id = 0;
 
+    Entity* score_board;
     int score_keyPressed = 0;
     int score_wordPressed = 0;
     int score = 0;
     int score_pool = 0;
+    Entity* score_pen;
+    SDL_Texture* number_img[10];
 public:
+    void drawNumberText(int drawNumber, int drawX, int drawY, double drawSize){
+        double _h = score_pen->getH();
+        double _w = score_pen->getW();
+        score_pen->setHW(score_pen->getH()*drawSize,score_pen->getW()*drawSize);
+        string s = to_string(drawNumber);
+        for(int i=0;i<s.size();++i){
+            score_pen->setImage(number_img[s[i]-48]);
+            score_pen->setXY(drawX+i*score_pen->getW()/1.85, drawY);
+            score_pen->render();
+        }
+        score_pen->setHW(_h, _w);
+    }
+    void drawScoreBoard(){
+        drawNumberText(score_pool, 120, 45, 0.6);
+        drawNumberText(score_wordPressed, 125, 83, 0.35);
+        drawNumberText(score_keyPressed, 125, 107, 0.35);
+        //DrawNumberText(score_keyPressed, 100, 70, 0.4);
+    }
     Player(){}
     Player(double x, double y, string path, SDL_Renderer* renderer){
         setXY(x, y);
@@ -221,13 +242,23 @@ public:
         string s = "";
         for(char i='0';i<='9';++i){
             s = i;
-            key_img[i] = loadTexture("resources/key1/"+s+".png", getRenderer());
+            key_img[i] = loadTexture("resources/key1/"+s+".png", renderer);
         }
         for(char i='a';i<='z';++i){
             s = i;
-            key_img[i] = loadTexture("resources/key1/"+s+".png", getRenderer());
+            key_img[i] = loadTexture("resources/key1/"+s+".png", renderer);
         }
         key_now = new Entity(0, 0, "resources/key1/a.png", renderer);
+
+        for(int i=0;i<10;++i){
+            s = char(i+48);
+            number_img[i] = loadTexture("resources/number/"+s+".png", renderer);
+        }
+        score_pen = new Entity(0,0, "resources/number/0.png", renderer);
+        score_pen->setHW(60,50);
+        score_board = new Entity(0,0, "resources/number/box.png", renderer);
+        score_board->setScale(0.6);
+        score_board->setXY(-10, -10);
     }
     int findNearestEnemy(){
         int _max = INT_MIN;
@@ -275,6 +306,7 @@ public:
                 }
             }
         }
+        score_board->render();
     }
     void updateEnemy(){
         for(int i=0;i<=50;++i){
@@ -323,6 +355,7 @@ public:
                 bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY(), "resources/bulletanimation/bullet", getRenderer(), i);
                 bullet_status[id] = 1;
                 enemy[i]->remKey();
+                score_keyPressed++;
                 return;
             }
         }
@@ -333,11 +366,9 @@ public:
                     int id = findBulletEmpty();
                     bullet[id]->clearEntity();
                     bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY(), "resources/bulletanimation/bullet", getRenderer(), i);
-
-                    score_keyPressed++;
-
                     bullet_status[id] = 1;
                     enemy[i]->remKey();
+                    score_keyPressed++;
                     break;
                 }
             }
@@ -382,7 +413,13 @@ public:
             SDL_DestroyTexture(key_img[i]);
             key_img[i] = NULL;
         }
+        for(int i=0;i<10;++i){
+            SDL_DestroyTexture(number_img[i]);
+            number_img[i] = NULL;
+        }
         key_now->clearEntity();
+        score_pen->clearEntity();
+        score_board->clearEntity();
     }
 };
 #endif //ENTITY__H

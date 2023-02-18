@@ -107,6 +107,7 @@ void Game::render(){
 
     player.renderBullet();
     player.renderEnemy();
+    player.drawScoreBoard();
 
     point.renderCenter();
 
@@ -122,6 +123,7 @@ void Game::update(){
 
     player.updateBullet();
     player.updateEnemy();
+
 
     point.setToXY(player.getPX(), player.getPY());
     point.update();
