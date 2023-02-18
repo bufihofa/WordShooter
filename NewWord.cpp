@@ -15,8 +15,7 @@ string getNewWord(int difficulty){
     srand(SDL_GetTicks());
     string s = "";
     if(difficulty == 1){
-        //s += raw1[rand() % raw1.size()];
-        s[0] = 'f';
+        s += raw1[rand() % raw1.size()];
         s += raw2[rand() % raw2.size()];
         int temp = getRandomNumber(0,2);
         if(temp == 0){
