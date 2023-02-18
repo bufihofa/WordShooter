@@ -7,7 +7,7 @@ using namespace std;
 
 string raw1 = "bcdghklmnprstvxfj";
 string raw2 = "aeiou";
-
+int i = 0;
 int getRandomNumber(int _min, int _max){
     return rand() % ( _max - _min +1) + _min;
 }
@@ -15,7 +15,8 @@ string getNewWord(int difficulty){
     srand(SDL_GetTicks());
     string s = "";
     if(difficulty == 1){
-        s += raw1[rand() % raw1.size()];
+        i++;
+        s += raw1[i % raw1.size()];
         s += raw2[rand() % raw2.size()];
         int temp = getRandomNumber(0,2);
         if(temp == 0){

@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1676731669 source:c:\users\hoapr\onedrive\máy tính\wordshooter\game.cpp
+1676731811 source:c:\users\hoapr\onedrive\máy tính\wordshooter\game.cpp
 	"Game.h"
 	"Player.cpp"
 	<bits/stdc++.h>
@@ -8,13 +8,13 @@
 1676731464 c:\users\hoapr\onedrive\máy tính\wordshooter\game.h
 	<SDL.h>
 
-1676731619 c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
+1676736787 c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
 	"NewWord.h"
 	"Entity.h"
 	<SDL.h>
 	<bits/stdc++.h>
 
-1676696127 c:\users\hoapr\onedrive\máy tính\wordshooter\entity.h
+1676737341 c:\users\hoapr\onedrive\máy tính\wordshooter\entity.h
 	<iostream>
 	"SDL_utils.h"
 
@@ -52,7 +52,7 @@
 	<thread>
 	<chrono>
 
-1676731760 source:c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
+1676736787 source:c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
 	"NewWord.h"
 	"Entity.h"
 	<SDL.h>

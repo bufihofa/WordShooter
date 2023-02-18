@@ -106,10 +106,9 @@ public:
     void renderCenter(){
         pos_c.h = getH();
         pos_c.w = getW();
-        pos_c.x = getX()-pos.w/2.0;
-        pos_c.y = getY()-pos.h/2.0;
+        pos_c.x = getX() - getH()/2.0;
+        pos_c.y = getY() - getW()/2.0;
         SDL_RenderCopyEx(renderer, image, NULL, &pos_c, angle, NULL, SDL_FLIP_NONE);
-
     }
     void setPos(double x, double y, double h, double w){
         pos.x=x;
