@@ -24,6 +24,9 @@ public:
     void stop(){ this-> running = false;}
     void conti(){this->pause = false;}
     void pau(){this->pause = true;}
+
+
+
     void gamePause();
     void gameContinue();
     void gameStop();

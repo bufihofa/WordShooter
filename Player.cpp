@@ -333,6 +333,13 @@ public:
             }
         }
     }
+    void clearAll(){
+        for(int i=0;i<=50;++i){
+
+            if(enemy_status[i] == 1)bullet[i]->clearEntity();
+            if(bullet_status[i] == 1)enemy[i]->clearEntity();
+        }
+    }
 };
 #endif //ENTITY__H
 

@@ -53,7 +53,19 @@ void Game::gameContinue(){
 void Game::gameStop(){
     this->pau();
     this->stop();
+
+    player.clearAll();
+    player.clearEntity();
+    bgr.clearEntity();
+    pauseButton.clearEntity();
+    faqButton.clearEntity();
+    settingButton.clearEntity();
+    menuButton.clearEntity();
+    point.clearEntity();
+    pausetext.clearEntity();
+
     openMenu(window,renderer, 1200, 800);
+
 }
 void Game::handleEvents(){
     SDL_Event event;
