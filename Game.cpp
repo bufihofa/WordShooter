@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Player.cpp"
 #include <bits/stdc++.h>
+#include "GameMenu.h"
 using namespace std;
 
 Player player;
@@ -49,6 +50,11 @@ void Game::gameContinue(){
     pauseButton.setImage(loadTexture("resources/Pause_BTN.png", this->renderer));
     this->conti();
 }
+void Game::gameStop(){
+    this->pau();
+    this->stop();
+    openGameMenu(window, renderer, -1000, -1000, 1200, 800);
+}
 void Game::handleEvents(){
     SDL_Event event;
     SDL_PollEvent(&event);
@@ -62,6 +68,10 @@ void Game::handleEvents(){
             }
             pauseButton.render();
             SDL_RenderPresent(renderer);
+            return;
+        }
+        else if( menuButton.isClicked(event.button.x, event.button.y) ){
+            this->gameStop();
             return;
         }
     }

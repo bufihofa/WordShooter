@@ -6,6 +6,7 @@
 #include <bits/stdc++.h>
 
 
+//SDL_Texture* key_img[100];
 
 class moveEntity: public Entity{
 private:
@@ -188,6 +189,7 @@ private:
     int enemy_status[51];
     int numberOfEnemy = 0;
     int target_id = 0;
+
 public:
     Player(){}
     Player(double x, double y, string path, SDL_Renderer* renderer){
@@ -209,7 +211,6 @@ public:
         for(int i=0;i<=50;++i){
             if(enemy_status[i] == 1) {
                 if(enemy[i]->getY() >= _max){
-
                     _max = enemy[i]->getY();
                     _id = i;
                 }

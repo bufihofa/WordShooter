@@ -14,8 +14,6 @@ public:
         h = 500;
         w = 500;
     }
-
-
     double getX()  {return this->x;}
     void setX(double x)    {this->x=x;}
 

@@ -4,16 +4,16 @@
 	"Player.cpp"
 	<bits/stdc++.h>
 
-1676572301 c:\users\hoapr\onedrive\máy tính\wordshooter\game.h
+1676689181 c:\users\hoapr\onedrive\máy tính\wordshooter\game.h
 	<SDL.h>
 
-1676634132 c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
+1676688612 c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
 	"NewWord.h"
 	"Entity.h"
 	<SDL.h>
 	<bits/stdc++.h>
 
-1676608563 c:\users\hoapr\onedrive\máy tính\wordshooter\entity.h
+1676688612 c:\users\hoapr\onedrive\máy tính\wordshooter\entity.h
 	<iostream>
 	"SDL_utils.h"
 
@@ -49,7 +49,7 @@
 	<thread>
 	<chrono>
 
-1676633896 source:c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
+1676688612 source:c:\users\hoapr\onedrive\máy tính\wordshooter\player.cpp
 	"NewWord.h"
 	"Entity.h"
 	<SDL.h>
@@ -66,7 +66,7 @@
 	"NewWord.h"
 	<bits/stdc++.h>
 
-1676604479 source:c:\users\hoapr\onedrive\máy tính\wordshooter\newword.cpp
+1676685383 source:c:\users\hoapr\onedrive\máy tính\wordshooter\newword.cpp
 	"NewWord.h"
 	<bits/stdc++.h>
 	<SDL.h>
