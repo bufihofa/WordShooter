@@ -71,6 +71,7 @@ void Game::handleEvents(){
     SDL_Event event;
     SDL_PollEvent(&event);
     if(event.type == SDL_MOUSEBUTTONDOWN){
+        //cout<<player.getShootAngle(event.button.x, event.button.y)<<"\n";
         if(pauseButton.isClicked(event.button.x, event.button.y)){
             if(this->isPause()){
                 this->gameContinue();
@@ -87,6 +88,7 @@ void Game::handleEvents(){
             return;
         }
     }
+
     if(!this->isPause() && event.type == SDL_KEYDOWN){
         //cout<<char(event.key.keysym.sym)<<" "<<event.type<<"\n";
         if(event.key.keysym.sym == SDLK_SPACE){

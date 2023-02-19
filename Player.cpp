@@ -164,7 +164,7 @@ public:
         setRenderer(renderer);
         loadIMG(path + "_0.png");
         SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
-        setHW(20, 20);
+
         this->setDelta();
     }
 
@@ -207,6 +207,13 @@ private:
     int time_3 = 1;
     int _sp = 400;
 public:
+    double getShootAngle(double x, double y){
+
+        if(x>600) return 360 - atan((750.0-y)/(x-600.0))* 57.3;
+        else if(x<600) return 180 + atan((750.0-y)/(600.0-x))* 57.3;
+        else return 90;
+    }
+
     void drawNumberText(int drawW, int drawX, int drawY, double drawSize){
         string s = to_string(drawW);
         double _h = score_pen->getH();
@@ -282,6 +289,9 @@ public:
         score_board = new Entity(0,0, "resources/number/box.png", renderer);
         score_board->setScale(0.6);
         score_board->setXY(-10, -10);
+
+        this->setAngle(270);
+        this->setAC(1200,1500);
     }
     void debugCOUT(){
         int c1=0;
@@ -409,6 +419,7 @@ public:
     void shootXP(double x, double y){
         int id = findXPEmpty();
         exp[id] = new Bullet(x, y, 6, 55, "resources/xpdot", getRenderer(), id);
+        exp[id]->setHW(20,20);
         exp[id]->setSpeed(10);
         exp_status[id] = 1;
     }
@@ -425,7 +436,7 @@ public:
     void renderXP(){
         for(int i=0;i<=50;++i){
             if(exp_status[i] == 1 && exp[i] != NULL){
-                exp[i]->render();
+                exp[i]->renderCenter();
             }
         }
     }
@@ -436,10 +447,16 @@ public:
             if(enemy[i]->checkKey(key)) {
                 target_id = i;
                 int id = findBulletEmpty();
-                bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY(), "resources/bulletanimation/bullet", getRenderer(), i);
+                bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY()*0.9 + 75, "resources/bulletanimation/0", getRenderer(), i);
                 bullet_status[id] = 1;
+                bullet[id]->setH(bullet[id]->getH()*0.2);
+                bullet[id]->setW(bullet[id]->getW()*0.2);
+                double _a = this->getShootAngle(enemy[i]->getX(), enemy[i]->getY()*0.9 + 75);
+                bullet[id]->setAngle(_a);
+                this->setAngle(_a);
                 if (enemy[i] != NULL) enemy[i]->remKey();
                 score_keyPressed++;
+
                 return;
             }
         }
@@ -448,8 +465,13 @@ public:
                 if(enemy[i]->checkKey(key)) {
                     target_id = i;
                     int id = findBulletEmpty();
-                    bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY(), "resources/bulletanimation/bullet", getRenderer(), i);
+                    bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY()*0.9 + 75 , "resources/bulletanimation/0", getRenderer(), i);
                     bullet_status[id] = 1;
+                    bullet[id]->setH(bullet[id]->getH()*0.2);
+                    bullet[id]->setW(bullet[id]->getW()*0.2);
+                    double _a = this->getShootAngle(enemy[i]->getX(), enemy[i]->getY()*0.9 + 75);
+                    bullet[id]->setAngle(_a);
+                    this->setAngle(_a);
                     if (enemy[i] != NULL) enemy[i]->remKey();
                     score_keyPressed++;
                     break;
@@ -461,7 +483,7 @@ public:
     void renderBullet(){
         for(int i=0;i<=50;++i){
             if(bullet_status[i] == 1  && bullet[i] != NULL){
-                bullet[i]->render();
+                bullet[i]->renderCenter();
             }
         }
     }

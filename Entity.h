@@ -100,7 +100,7 @@ public:
     }
     void render()   {SDL_RenderCopyEx(renderer, image, NULL, &pos, angle, NULL, SDL_FLIP_NONE);}
     void render2() {
-        //angle+=0.015;
+        angle+=0.015;
         SDL_RenderCopyEx(renderer, image, NULL, &pos, angle, NULL, SDL_FLIP_NONE);
     }
     void renderCenter(){

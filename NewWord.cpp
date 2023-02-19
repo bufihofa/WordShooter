@@ -52,7 +52,6 @@ string getNewWord(int difficulty){
             case 12: s+='d'; break;
         }
     }
-    cout<<s<<"\n";
     return s;
 
 }
