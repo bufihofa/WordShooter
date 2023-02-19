@@ -8,7 +8,7 @@
 using namespace std;
 
 Game* game;
-
+/*
 void renderThreadFunc(){
 
     int FPS = 60;
@@ -19,19 +19,23 @@ void renderThreadFunc(){
         if(!game->isPause()){
             game->render();
         }
-        frameTime = SDL_GetTicks() - frameTime;
-        this_thread::sleep_for(chrono::milliseconds(frameDelay-frameTime));
+        frameTime = frameDelay - SDL_GetTicks() + frameTime;
+        cout<<frameTime<<"render! \n";
+        if(frameTime > 0){
+            this_thread::sleep_for(chrono::milliseconds(frameTime));
+        }
     }
 }
-
+*/
 void newGame(SDL_Window* window, SDL_Renderer* renderer, int diffMode){
 
     game = new Game(window, renderer);
-    thread renderThread(renderThreadFunc);
 
+    bool render = true;
     int UPS = 60;
     int updateDelay = 1000 / UPS;
     int updateTime = 0;
+    //thread renderThread;
     while(game->isRunning()){
         updateTime = SDL_GetTicks();
         game->handleEvents();
@@ -39,10 +43,16 @@ void newGame(SDL_Window* window, SDL_Renderer* renderer, int diffMode){
         if(!game->isPause()){
             game->handleEvents();
             game->update();
+            game->render();
         }
-        updateTime = SDL_GetTicks() - updateTime;
-        this_thread::sleep_for(chrono::milliseconds(updateDelay-updateTime));
+        if(render){
+            render = false;
+            //renderThread = thread(renderThreadFunc);
+        }
+        updateTime = updateDelay - SDL_GetTicks() + updateTime;
 
-
+        if(updateTime>0){
+            this_thread::sleep_for(chrono::milliseconds(updateTime));
+        }
     }
 }

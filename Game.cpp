@@ -109,6 +109,7 @@ void Game::render(){
     player.renderEnemy();
     player.drawScoreBoard();
 
+    player.renderXP();
     point.renderCenter();
 
     pauseButton.render();
@@ -123,8 +124,8 @@ void Game::update(){
 
     player.updateBullet();
     player.updateEnemy();
-
-
+    player.updateXP();
+    //player.debugCOUT();
     point.setToXY(player.getPX(), player.getPY());
     point.update();
 

@@ -28,7 +28,7 @@ public:
         setDelta();
     }
     void setDelta(){
-        delta = speed/sqrt((toX-oldX)*(toX-oldX)+(toY-oldY)*(toY-oldY));
+        delta = double(speed)/sqrt((toX-oldX)*(toX-oldX)+(toY-oldY)*(toY-oldY));
     }
     double getDelta(){
         return this->delta;
@@ -66,9 +66,18 @@ public:
         }
         else{
             setAngle(getAngle()+7+pc*10);
-            addX(0.04*(toX-getX())*3-pc*2);
-            addY(0.04*(toY-getY())*3-pc*2);
+            addX(0.12*(toX-getX())-pc*2);
+            addY(0.12*(toY-getY())-pc*2);
         }
+    }
+
+    void update_1(){
+        double pc = getPercent();
+        setAngle(getAngle()+7+pc*10);
+        addX((0.03*(toX-getX())-pc*3.0));
+        addY((0.06*(toY-getY())-pc*7.0));
+        //addX((1.2-pc)*(0.01*(toX-getX())*3));
+        //addY((1.2-pc)*(0.02*(toY-getY())*3));
     }
 
 };
@@ -142,19 +151,8 @@ public:
 class Bullet: public moveEntity{
 private:
     double speed = 200;
-    int numberOfFrame = 1;
-    int nowFrame = 0;
     int id = 0;
-    vector<SDL_Texture* > Animation;
 public:
-
-    void loadAnimation(string _path){
-        for(int i=0;i<numberOfFrame;i++){
-            Animation.push_back(loadTexture(_path + "_" + char(i+48) + ".png", getRenderer()));
-            SDL_QueryTexture(Animation[i], NULL, NULL, &getPos().w, &getPos().h);
-        }
-        setHW(20, 20);
-    }
     int getID(){
         return this->id;
     }
@@ -164,7 +162,6 @@ public:
         setXY(x, y);
         setToXY(toX, toY);
         setRenderer(renderer);
-        //loadAnimation(path);
         loadIMG(path + "_0.png");
         SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
         setHW(20, 20);
@@ -175,12 +172,7 @@ public:
 
     double getSpeed(){return this->speed;}
     void setSpeed(double speed){this->speed = speed;}
-    int getNumberOfFrame(){return numberOfFrame;}
-    void nextFrame(){
-        nowFrame++;
-        nowFrame %= (numberOfFrame*5);
-        setImage(Animation[nowFrame/5]);
-    }
+
     void update3(){
         this->addX(-1*(getOldX()-getToX())*getDelta());
         this->addY(-1*(getOldY()-getToY())*getDelta());
@@ -191,14 +183,17 @@ public:
 };
 class Player: public Entity{
 private:
+    Bullet* exp[51];
     Bullet* bullet[51];
     Enemy* enemy[51];
     int bullet_status[51];
     int enemy_status[51];
+    int exp_status[51];
     SDL_Texture* key_img[150];
     Entity* key_now;
     int numberOfEnemy = 0;
     int target_id = 0;
+
 
     Entity* score_board;
     int score_keyPressed = 0;
@@ -207,12 +202,16 @@ private:
     int score_pool = 0;
     Entity* score_pen;
     SDL_Texture* number_img[10];
+    double time = 0;
+    int time_2 = 1;
+    int time_3 = 1;
+    int _sp = 400;
 public:
-    void drawNumberText(int drawNumber, int drawX, int drawY, double drawSize){
+    void drawNumberText(int drawW, int drawX, int drawY, double drawSize){
+        string s = to_string(drawW);
         double _h = score_pen->getH();
         double _w = score_pen->getW();
         score_pen->setHW(score_pen->getH()*drawSize,score_pen->getW()*drawSize);
-        string s = to_string(drawNumber);
         for(int i=0;i<s.size();++i){
             score_pen->setImage(number_img[s[i]-48]);
             score_pen->setXY(drawX+i*score_pen->getW()/1.85, drawY);
@@ -221,9 +220,21 @@ public:
         score_pen->setHW(_h, _w);
     }
     void drawScoreBoard(){
-        drawNumberText(score_pool, 120, 45, 0.6);
+        time+=16;
+        time_3+=16;
+        if(time>(1000-time_2*2)){
+            time = time-1000+time_2*2;
+            time_2++;
+            _sp+=50;
+            this->addEnemy(_sp % 1000, 0, "resources/HardShip.png", 1.5, 0.3, 180);
+        }
+        score += score_pool*0.02;
+        score_pool *= 0.98;
+        drawNumberText(score, 120, 45, 0.6);
         drawNumberText(score_wordPressed, 125, 83, 0.35);
         drawNumberText(score_keyPressed, 125, 107, 0.35);
+        drawNumberText(time_3/1000, 30, 8, 0.4);
+        drawNumberText(score_keyPressed*12/(time_3/1000.0), 200, 135, 0.4);
         //DrawNumberText(score_keyPressed, 100, 70, 0.4);
     }
     Player(){}
@@ -233,23 +244,35 @@ public:
         loadIMG(path);
         SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
         setHW(getPos().h, getPos().w);
+        /*
         for(int i=0;i<=50;++i){
             bullet[i] = new Bullet();
             enemy[i] = new Enemy();
+            exp[i] = new Bullet();
+            exp_status[i] = 0;
             bullet_status[i] = 0;
             enemy_status[i] = 0;
         }
-        string s = "";
+        */
+        for(int i=0;i<=50;++i){
+            bullet[i] = new Bullet();
+            enemy[i] = new Enemy();
+            exp[i] = new Bullet();
+            exp_status[i] = 0;
+            bullet_status[i] = 0;
+            enemy_status[i] = 0;
+        }
+        string s = "0-Key";
         for(char i='0';i<='9';++i){
-            s = i;
-            key_img[i] = loadTexture("resources/key1/"+s+".png", renderer);
+            s[0] = i;
+            key_img[i] = loadTexture("resources/Dark/"+s+".png", renderer);
         }
         for(char i='a';i<='z';++i){
-            s = i;
-            key_img[i] = loadTexture("resources/key1/"+s+".png", renderer);
+            s[0] = i;
+            key_img[i] = loadTexture("resources/Dark/"+s+".png", renderer);
         }
-        key_now = new Entity(0, 0, "resources/key1/a.png", renderer);
-
+        key_now = new Entity(0, 0, "resources/Dark/A-Key.png", renderer);
+        key_now->setHW(20,20);
         for(int i=0;i<10;++i){
             s = char(i+48);
             number_img[i] = loadTexture("resources/number/"+s+".png", renderer);
@@ -260,11 +283,29 @@ public:
         score_board->setScale(0.6);
         score_board->setXY(-10, -10);
     }
+    void debugCOUT(){
+        int c1=0;
+        int c2=0;
+        int c3=0;
+        int d1=0;
+        int d2=0;
+        int d3=0;
+        for(int i=0;i<=50;i++){
+            if(enemy_status[i] == 1) c1++;
+            if(bullet_status[i] == 1) c2++;
+            if(exp_status[i] == 1) c3++;
+            if(enemy[i] != NULL) d1++;
+            if(bullet[i] != NULL) d2++;
+            if(exp[i] != NULL) d3++;
+        }
+        cout<<c1<<" "<<c2<<" "<<c3<<" "<<d1<<" "<<d2<<" "<<d3<<"\n";
+
+    }
     int findNearestEnemy(){
         int _max = INT_MIN;
         int _id = 0;
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 1 && enemy[i]->getNumber()>0) {
+            if(enemy_status[i] == 1 && enemy[i] != NULL && enemy[i]->getNumber()>0) {
                 if(enemy[i]->getY() >= _max){
                     _max = enemy[i]->getY();
                     _id = i;
@@ -274,34 +315,35 @@ public:
         if(_max == INT_MIN) return -1;
         return _id;
     }
+
     int findEnemyEmpty(){
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 0) return i;
+            if(enemy_status[i] == 0 && enemy[i] != NULL) return i;
         }
     }
     void removeEnemy(int id){
         enemy_status[id] = 0;
+        if(enemy[id] != NULL) enemy[id]->clearEntity();
         numberOfEnemy--;
     }
     void addEnemy(double _x, double _y, string path, double speed, double scale, double angle){
         int id = findEnemyEmpty();
-        enemy[id]->clearEntity();
         enemy[id] = new Enemy(_x, 750, _x, _y, path, speed, scale, getRenderer(), angle);
         enemy_status[id] = 1;
         numberOfEnemy++;
     }
     void renderEnemy(){
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 1){
+            if(enemy_status[i] == 1 && enemy[i] != NULL){
                 enemy[i]->renderCenter();
             }
         }
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 1){
+            if(enemy_status[i] == 1 && enemy[i] != NULL){
                 int temp = enemy[i]->getNumber();
                 for(int j=0;j<temp;++j){
                     key_now->setImage(key_img[enemy[i]->getWord(j)]);
-                    key_now->setXY(enemy[i]->getX()-temp*10+j*20, enemy[i]->getY()-45);
+                    key_now->setXY(enemy[i]->getX()-temp*9+j*20, enemy[i]->getY()-45);
                     key_now->render();
                 }
             }
@@ -310,7 +352,7 @@ public:
     }
     void updateEnemy(){
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 1){
+            if(enemy_status[i] == 1 && enemy[i] != NULL){
                 enemy[i]->update2();
                 if(enemy[i]->outOfRange()) {
                     removeEnemy(i);
@@ -319,55 +361,96 @@ public:
         }
     }
     double getPX(){
+
         if(numberOfEnemy>0){
             if(enemy_status[target_id] == 0) target_id = findNearestEnemy();
             if(enemy[target_id]->getNumber()==0) target_id = findNearestEnemy();
             if(target_id == -1) return 600;
             return enemy[target_id]->getX();
         }
+
+        //if(numberOfEnemy>0 && enemy[target_id] != NULL && enemy[target_id]->getNumber()>0) return enemy[target_id]->getX();
+
         return 600;
     }
     double getPY(){
+
         if(numberOfEnemy>0){
             if(enemy_status[target_id] == 0) target_id = findNearestEnemy();
             if(enemy[target_id]->getNumber()==0) target_id = findNearestEnemy();
             if(target_id == -1) return 400;
             return enemy[target_id]->getY();
         }
+
+        //if(numberOfEnemy>0 && enemy[target_id] != NULL && enemy[target_id]->getNumber()>0) return enemy[target_id]->getY();
         return 400;
     }
 
     int findBulletEmpty(){
         for(int i=0;i<=50;++i){
-            if(bullet_status[i] == 0) return i;
+            if(bullet_status[i] == 0 && bullet[i] != NULL) return i;
         }
     }
     void removeBullet(int id){
         bullet_status[id] = 0;
+        if(bullet[id] != NULL) bullet[id]->clearEntity();
     }
+
+
+    int findXPEmpty(){
+        for(int i=0;i<=50;++i){
+            if(exp_status[i] == 0) return i;
+        }
+    }
+    void removeXP(int id){
+        exp_status[id] = 0;
+        if(bullet[id] != NULL) exp[id]->clearEntity();
+    }
+    void shootXP(double x, double y){
+        int id = findXPEmpty();
+        exp[id] = new Bullet(x, y, 6, 55, "resources/xpdot", getRenderer(), id);
+        exp[id]->setSpeed(10);
+        exp_status[id] = 1;
+    }
+    void updateXP(){
+        for(int i=0;i<=50;++i){
+            if(exp_status[i] == 1  && exp[i] != NULL){
+                exp[i]->update_1();
+                if(exp[i]->getX() <= 7.0){
+                    removeXP(i);
+                }
+            }
+        }
+    }
+    void renderXP(){
+        for(int i=0;i<=50;++i){
+            if(exp_status[i] == 1 && exp[i] != NULL){
+                exp[i]->render();
+            }
+        }
+    }
+
     void shootBullet(int key){
-        if(enemy_status[target_id] == 1) {
+        if(enemy_status[target_id] == 1  && enemy[target_id] != NULL) {
             int i = target_id;
             if(enemy[i]->checkKey(key)) {
                 target_id = i;
                 int id = findBulletEmpty();
-                bullet[id]->clearEntity();
                 bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY(), "resources/bulletanimation/bullet", getRenderer(), i);
                 bullet_status[id] = 1;
-                enemy[i]->remKey();
+                if (enemy[i] != NULL) enemy[i]->remKey();
                 score_keyPressed++;
                 return;
             }
         }
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 1){
+            if(enemy_status[i] == 1  && enemy[i] != NULL){
                 if(enemy[i]->checkKey(key)) {
                     target_id = i;
                     int id = findBulletEmpty();
-                    bullet[id]->clearEntity();
                     bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY(), "resources/bulletanimation/bullet", getRenderer(), i);
                     bullet_status[id] = 1;
-                    enemy[i]->remKey();
+                    if (enemy[i] != NULL) enemy[i]->remKey();
                     score_keyPressed++;
                     break;
                 }
@@ -377,33 +460,35 @@ public:
     }
     void renderBullet(){
         for(int i=0;i<=50;++i){
-            if(bullet_status[i] == 1){
+            if(bullet_status[i] == 1  && bullet[i] != NULL){
                 bullet[i]->render();
             }
         }
     }
     void updateBullet(){
         for(int i=0;i<=50;++i){
-            if(bullet_status[i] == 1){
+            if(bullet_status[i] == 1 && bullet[i] != NULL){
                 bullet[i]->update3();
                 if(bullet[i]->isHitted()){
-                    enemy[bullet[i]->getID()]->addDmg();
-                    if(!enemy[bullet[i]->getID()]->isAlive()) {
-                        cout<<"KILLED\n";
-                        score_wordPressed++;
-                        score_pool += enemy[bullet[i]->getID()]->getHp() * getRandomNumber(80,100);
-                        removeEnemy(bullet[i]->getID());
-
+                    if(enemy[bullet[i]->getID()] != NULL){
+                        enemy[bullet[i]->getID()]->addDmg();
+                        if(!enemy[bullet[i]->getID()]->isAlive()) {
+                            shootXP(bullet[i]->getX(), bullet[i]->getY()-5);
+                            score_wordPressed++;
+                            score_pool += enemy[bullet[i]->getID()]->getHp() * getRandomNumber(80,100);
+                            removeEnemy(bullet[i]->getID());
+                        }
+                        removeBullet(i);
                     }
-                    removeBullet(i);
                 }
             }
         }
     }
     void clearAll(){
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 1)bullet[i]->clearEntity();
-            if(bullet_status[i] == 1)enemy[i]->clearEntity();
+            if(enemy_status[i] == 1) enemy[i]->clearEntity();
+            if(bullet_status[i] == 1) bullet[i]->clearEntity();
+            if(exp_status[i] == 1) exp[i]->clearEntity();
         }
         for(char i='0';i<='9';++i){
             SDL_DestroyTexture(key_img[i]);
