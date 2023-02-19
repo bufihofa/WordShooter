@@ -109,6 +109,7 @@ void Game::render(){
 
     player.renderBullet();
     player.renderEnemy();
+    player.boomRender();
     player.drawScoreBoard();
 
     player.renderXP();

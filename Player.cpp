@@ -181,6 +181,24 @@ public:
         return (getY()<getToY());
     }
 };
+class BoomAnimation{
+private:
+    double x,y;
+    double frame;
+public:
+    BoomAnimation(){}
+    BoomAnimation(double x, double y){
+        this->x = x;
+        this->y = y;
+        this->frame = 0;
+    }
+    double getX(){ return this->x;}
+    double getY(){ return this->y;}
+    int getFrame() {return frame;}
+    void nextFrame(){
+        frame+=0.5;
+    }
+};
 class Player: public Entity{
 private:
     Bullet* exp[51];
@@ -193,7 +211,11 @@ private:
     Entity* key_now;
     int numberOfEnemy = 0;
     int target_id = 0;
+    SDL_Texture* boom_animation[25];
+    Entity* boom_pen;
 
+
+    deque<BoomAnimation> b_a;
 
     Entity* score_board;
     int score_keyPressed = 0;
@@ -289,9 +311,32 @@ public:
         score_board = new Entity(0,0, "resources/number/box.png", renderer);
         score_board->setScale(0.6);
         score_board->setXY(-10, -10);
+        string D = "1";
+        for(int i=0;i<25;++i){
+            D = "resources/boom/Boom_"+to_string(i)+".png";
+            boom_animation[i] = loadTexture(D, renderer);
+        }
+        boom_pen = new Entity(0,0, "resources/boom/Boom_10.png", renderer);
+        boom_pen->setHW(70,70);
 
         this->setAngle(270);
         this->setAC(1200,1500);
+    }
+    void playBoomAnimation(double x, double y){
+        b_a.push_back(BoomAnimation(x, y));
+    }
+    void boomRender(){
+        while(!b_a.empty() && b_a.at(0).getFrame() > 23) b_a.pop_front();
+        if(!b_a.empty()){
+            for(int i=0;i<b_a.size();++i){
+                b_a.at(i).nextFrame();
+                //cout<<b_a.at(i).getFrame()<<" fr\n";
+                //cout<<b_a.size()<<" size\n";
+                boom_pen->setXY(b_a.at(i).getX(), b_a.at(i).getY());
+                boom_pen->setImage(boom_animation[b_a.at(i).getFrame()]);
+                boom_pen->renderCenter();
+            }
+        }
     }
     void debugCOUT(){
         int c1=0;
@@ -447,7 +492,8 @@ public:
             if(enemy[i]->checkKey(key)) {
                 target_id = i;
                 int id = findBulletEmpty();
-                bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY()*0.9 + 75, "resources/bulletanimation/0", getRenderer(), i);
+                string s = to_string(int(SDL_GetTicks()%5));
+                bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY()*0.9 + 75, "resources/bulletanimation/" + s, getRenderer(), i);
                 bullet_status[id] = 1;
                 bullet[id]->setH(bullet[id]->getH()*0.2);
                 bullet[id]->setW(bullet[id]->getW()*0.2);
@@ -465,7 +511,8 @@ public:
                 if(enemy[i]->checkKey(key)) {
                     target_id = i;
                     int id = findBulletEmpty();
-                    bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY()*0.9 + 75 , "resources/bulletanimation/0", getRenderer(), i);
+                    string s = to_string(int(SDL_GetTicks()%5));
+                    bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY()*0.9 + 75 , "resources/bulletanimation/" + s, getRenderer(), i);
                     bullet_status[id] = 1;
                     bullet[id]->setH(bullet[id]->getH()*0.2);
                     bullet[id]->setW(bullet[id]->getW()*0.2);
@@ -496,9 +543,13 @@ public:
                         enemy[bullet[i]->getID()]->addDmg();
                         if(!enemy[bullet[i]->getID()]->isAlive()) {
                             shootXP(bullet[i]->getX(), bullet[i]->getY()-5);
+
+                            playBoomAnimation(bullet[i]->getX(), bullet[i]->getY());
+                            //cout<<bullet[i]->getX()<<" "<<bullet[i]->getY()<<"xy\n";
                             score_wordPressed++;
                             score_pool += enemy[bullet[i]->getID()]->getHp() * getRandomNumber(80,100);
                             removeEnemy(bullet[i]->getID());
+
                         }
                         removeBullet(i);
                     }
@@ -524,9 +575,14 @@ public:
             SDL_DestroyTexture(number_img[i]);
             number_img[i] = NULL;
         }
+        for(int i=0;i<25;i++){
+            SDL_DestroyTexture(boom_animation[i]);
+            boom_animation[i] = NULL;
+        }
         key_now->clearEntity();
         score_pen->clearEntity();
         score_board->clearEntity();
+        boom_pen->clearEntity();
     }
 };
 #endif //ENTITY__H
