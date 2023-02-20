@@ -48,12 +48,14 @@ public:
 
     double getW()  {return pos_d.getW();}
     void setW(double w)    {pos_d.setW(w);  pos.w=pos_d.getW();}
+
     double getCenterX(){
         return getX()+getW()/2;
     }
     double getCenterY(){
         return getY()+getH()/2;
     }
+
     void setXY(double x,double y){
         this->setX(x);
         this->setY(y);
@@ -80,16 +82,20 @@ public:
         this->addX(-0.5*(this->getW()-_w));
         this->addY(-0.5*(this->getH()-_h));
     }
+
     void addX(double x){this->setX(this->getX()+x);}
     void addY(double y){this->setY(this->getY()+y);}
     void addH(double h){this->setH(this->getH()+h);}
     void addW(double w){this->setW(this->getW()+w);}
+
     void loadIMG(string path){image = loadTexture(path, renderer);}
 
     bool isClicked(int x, int y){
-        return ((x >= this->getX()) && (x <= this->getX()+this->getW()) && (y >= this->getY()) && (y <= this->getY()+this->getH()) );
+        return ((x >= getX()) && (x <= getX()+getW()) && (y >= getY()) && (y <= getY() + getH()));
     }
-
+    bool isClickedCenter(int x, int y){
+        return ((x >= getX()-getW()/2) && (x <= getX()+getW()/2) && (y >= getY()-getH()/2) && (y <= getY()+getH()/2));
+    }
     Entity(){}
     Entity(double x, double y, string path, SDL_Renderer* renderer){
         setXY(x, y);
@@ -110,13 +116,9 @@ public:
         pos_c.y = getY() - getW()/2.0;
         SDL_RenderCopyEx(renderer, image, NULL, &pos_c, angle, NULL, SDL_FLIP_NONE);
     }
-    void setPos(double x, double y, double h, double w){
-        pos.x=x;
-        pos.y=y;
-        pos.h=h;
-        pos.w=w;
-    }
+
     void setCenterX(double _w)  {this->setX(_w/2 - this->getW()/2);}
+
     void setRenderer(SDL_Renderer* renderer)    {this->renderer = renderer;}
     void setImage(SDL_Texture* image)   {this->image = image;}
 

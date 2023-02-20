@@ -107,7 +107,7 @@ void Game::handleEvents(){
 
 }
 void Game::render(){
-    SDL_RenderClear(this->renderer);
+    //SDL_RenderClear(this->renderer);
     bgr.render2();
     player.render();
 

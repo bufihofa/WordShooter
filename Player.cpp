@@ -201,33 +201,36 @@ public:
 };
 class Player: public Entity{
 private:
+    deque<BoomAnimation> b_a;
+
     Bullet* exp[51];
     Bullet* bullet[51];
     Enemy* enemy[51];
     int bullet_status[51];
     int enemy_status[51];
     int exp_status[51];
-    SDL_Texture* key_img[150];
-    Entity* key_now;
+
     int numberOfEnemy = 0;
     int target_id = 0;
+
+    SDL_Texture* key_img[150];
     SDL_Texture* boom_animation[25];
+    SDL_Texture* number_img[10];
     Entity* boom_pen;
-
-
-    deque<BoomAnimation> b_a;
-
+    Entity* key_pen;
     Entity* score_board;
+    Entity* score_pen;
+
     int score_keyPressed = 0;
     int score_wordPressed = 0;
     int score = 0;
     int score_pool = 0;
-    Entity* score_pen;
-    SDL_Texture* number_img[10];
+
     double time = 0;
     int time_2 = 1;
     int time_3 = 1;
-    int _sp = 400;
+    int spawnpointX = 400;
+
     int diffMode = 1;
 public:
     void setDiff(int diffMode){
@@ -261,9 +264,9 @@ public:
         if(time>(1000-time_2*2)){
             time = time-1000+time_2*2;
             time_2++;
-            _sp+=50;
+            spawnpointX+=50;
             //ADD ENEMY per second
-            this->addEnemy(_sp % 1000, 0, "resources/HardShip.png", 0.7+(getDiff()/2.0), 0.3, 180);
+            this->addEnemy(spawnpointX % 1000, 0, "resources/HardShip.png", 0.7+(getDiff()/2.0), 0.3, 180);
         }
         score += score_pool*0.02;
         score_pool *= 0.98;
@@ -281,16 +284,7 @@ public:
         loadIMG(path);
         SDL_QueryTexture(getImage(), NULL, NULL, &getPos().w, &getPos().h);
         setHW(getPos().h, getPos().w);
-        /*
-        for(int i=0;i<=50;++i){
-            bullet[i] = new Bullet();
-            enemy[i] = new Enemy();
-            exp[i] = new Bullet();
-            exp_status[i] = 0;
-            bullet_status[i] = 0;
-            enemy_status[i] = 0;
-        }
-        */
+
         for(int i=0;i<=50;++i){
             bullet[i] = new Bullet();
             enemy[i] = new Enemy();
@@ -308,8 +302,8 @@ public:
             s[0] = i;
             key_img[i] = loadTexture("resources/Dark/"+s+".png", renderer);
         }
-        key_now = new Entity(0, 0, "resources/Dark/A-Key.png", renderer);
-        key_now->setHW(20,20);
+        key_pen = new Entity(0, 0, "resources/Dark/A-Key.png", renderer);
+        key_pen->setHW(20,20);
         for(int i=0;i<10;++i){
             s = char(i+48);
             number_img[i] = loadTexture("resources/number/"+s+".png", renderer);
@@ -346,29 +340,12 @@ public:
             }
         }
     }
-    void debugCOUT(){
-        int c1=0;
-        int c2=0;
-        int c3=0;
-        int d1=0;
-        int d2=0;
-        int d3=0;
-        for(int i=0;i<=50;i++){
-            if(enemy_status[i] == 1) c1++;
-            if(bullet_status[i] == 1) c2++;
-            if(exp_status[i] == 1) c3++;
-            if(enemy[i] != NULL) d1++;
-            if(bullet[i] != NULL) d2++;
-            if(exp[i] != NULL) d3++;
-        }
-        cout<<c1<<" "<<c2<<" "<<c3<<" "<<d1<<" "<<d2<<" "<<d3<<"\n";
 
-    }
     int findNearestEnemy(){
         int _max = INT_MIN;
         int _id = 0;
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 1 && enemy[i] != NULL && enemy[i]->getNumber()>0) {
+            if(enemy_status[i] == 1 && enemy[i]->getNumber()>0) {
                 if(enemy[i]->getY() >= _max){
                     _max = enemy[i]->getY();
                     _id = i;
@@ -381,13 +358,13 @@ public:
 
     int findEnemyEmpty(){
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 0 && enemy[i] != NULL) return i;
+            if(enemy_status[i] == 0) return i;
         }
     }
     void removeEnemy(int id){
         playBoomAnimation(enemy[id]->getX(), enemy[id]->getY());
         enemy_status[id] = 0;
-        if(enemy[id] != NULL) enemy[id]->clearEntity();
+        enemy[id]->clearEntity();
         numberOfEnemy--;
     }
     void addEnemy(double _x, double _y, string path, double speed, double scale, double angle){
@@ -398,17 +375,17 @@ public:
     }
     void renderEnemy(){
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 1 && enemy[i] != NULL){
+            if(enemy_status[i] == 1){
                 enemy[i]->renderCenter();
             }
         }
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 1 && enemy[i] != NULL){
+            if(enemy_status[i] == 1){
                 int temp = enemy[i]->getNumber();
                 for(int j=0;j<temp;++j){
-                    key_now->setImage(key_img[enemy[i]->getWord(j)]);
-                    key_now->setXY(enemy[i]->getX()-temp*9+j*20, enemy[i]->getY()-45);
-                    key_now->render();
+                    key_pen->setImage(key_img[enemy[i]->getWord(j)]);
+                    key_pen->setXY(enemy[i]->getX()-temp*9+j*20, enemy[i]->getY()-45);
+                    key_pen->render();
                 }
             }
         }
@@ -416,7 +393,7 @@ public:
     }
     void updateEnemy(){
         for(int i=0;i<=50;++i){
-            if(enemy_status[i] == 1 && enemy[i] != NULL){
+            if(enemy_status[i] == 1){
                 enemy[i]->update2();
                 if(enemy[i]->outOfRange()) {
                     removeEnemy(i);
@@ -433,7 +410,6 @@ public:
             return enemy[target_id]->getX();
         }
 
-        //if(numberOfEnemy>0 && enemy[target_id] != NULL && enemy[target_id]->getNumber()>0) return enemy[target_id]->getX();
 
         return 600;
     }
@@ -446,18 +422,17 @@ public:
             return enemy[target_id]->getY();
         }
 
-        //if(numberOfEnemy>0 && enemy[target_id] != NULL && enemy[target_id]->getNumber()>0) return enemy[target_id]->getY();
         return 400;
     }
 
     int findBulletEmpty(){
         for(int i=0;i<=50;++i){
-            if(bullet_status[i] == 0 && bullet[i] != NULL) return i;
+            if(bullet_status[i] == 0) return i;
         }
     }
     void removeBullet(int id){
         bullet_status[id] = 0;
-        if(bullet[id] != NULL) bullet[id]->clearEntity();
+        bullet[id]->clearEntity();
     }
 
 
@@ -468,7 +443,7 @@ public:
     }
     void removeXP(int id){
         exp_status[id] = 0;
-        if(bullet[id] != NULL) exp[id]->clearEntity();
+        exp[id]->clearEntity();
     }
     void shootXP(double x, double y){
         int id = findXPEmpty();
@@ -479,7 +454,7 @@ public:
     }
     void updateXP(){
         for(int i=0;i<=50;++i){
-            if(exp_status[i] == 1  && exp[i] != NULL){
+            if(exp_status[i] == 1){
                 exp[i]->update_1();
                 if(exp[i]->getX() <= 7.0){
                     removeXP(i);
@@ -489,29 +464,34 @@ public:
     }
     void renderXP(){
         for(int i=0;i<=50;++i){
-            if(exp_status[i] == 1 && exp[i] != NULL){
+            if(exp_status[i] == 1){
                 exp[i]->renderCenter();
             }
         }
     }
+    void createBullet(int i){
+        int id = findBulletEmpty();
 
+        string s = to_string(int(SDL_GetTicks()%5));
+
+        bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY()*0.9 + 75, "resources/bulletanimation/" + s, getRenderer(), i);
+        bullet_status[id] = 1;
+        bullet[id]->setH(bullet[id]->getH()*0.2);
+        bullet[id]->setW(bullet[id]->getW()*0.2);
+
+        double _a = this->getShootAngle(enemy[i]->getX(), enemy[i]->getY()*0.9 + 75);
+        bullet[id]->setAngle(_a);
+        this->setAngle(_a);
+
+        enemy[i]->remKey();
+        score_keyPressed++;
+    }
     void shootBullet(int key){
-        if(enemy_status[target_id] == 1  && enemy[target_id] != NULL) {
+        if(enemy_status[target_id] == 1) {
             int i = target_id;
             if(enemy[i]->checkKey(key)) {
                 target_id = i;
-                int id = findBulletEmpty();
-                string s = to_string(int(SDL_GetTicks()%5));
-                bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY()*0.9 + 75, "resources/bulletanimation/" + s, getRenderer(), i);
-                bullet_status[id] = 1;
-                bullet[id]->setH(bullet[id]->getH()*0.2);
-                bullet[id]->setW(bullet[id]->getW()*0.2);
-                double _a = this->getShootAngle(enemy[i]->getX(), enemy[i]->getY()*0.9 + 75);
-                bullet[id]->setAngle(_a);
-                this->setAngle(_a);
-                if (enemy[i] != NULL) enemy[i]->remKey();
-                score_keyPressed++;
-
+                createBullet(i);
                 return;
             }
         }
@@ -519,17 +499,7 @@ public:
             if(enemy_status[i] == 1  && enemy[i] != NULL){
                 if(enemy[i]->checkKey(key)) {
                     target_id = i;
-                    int id = findBulletEmpty();
-                    string s = to_string(int(SDL_GetTicks()%5));
-                    bullet[id] = new Bullet(getCenterX(), getCenterY(), enemy[i]->getX(), enemy[i]->getY()*0.9 + 75 , "resources/bulletanimation/" + s, getRenderer(), i);
-                    bullet_status[id] = 1;
-                    bullet[id]->setH(bullet[id]->getH()*0.2);
-                    bullet[id]->setW(bullet[id]->getW()*0.2);
-                    double _a = this->getShootAngle(enemy[i]->getX(), enemy[i]->getY()*0.9 + 75);
-                    bullet[id]->setAngle(_a);
-                    this->setAngle(_a);
-                    if (enemy[i] != NULL) enemy[i]->remKey();
-                    score_keyPressed++;
+                    createBullet(i);
                     break;
                 }
             }
@@ -545,20 +515,16 @@ public:
     }
     void updateBullet(){
         for(int i=0;i<=50;++i){
-            if(bullet_status[i] == 1 && bullet[i] != NULL){
+            if(bullet_status[i] == 1){
                 bullet[i]->update3();
                 if(bullet[i]->isHitted()){
-                    if(enemy[bullet[i]->getID()] != NULL){
+                    if(enemy_status[bullet[i]->getID()] == 1){
                         enemy[bullet[i]->getID()]->addDmg();
                         if(!enemy[bullet[i]->getID()]->isAlive()) {
                             shootXP(bullet[i]->getX(), bullet[i]->getY()-5);
-
-                            //playBoomAnimation(bullet[i]->getX(), bullet[i]->getY());
-                            //cout<<bullet[i]->getX()<<" "<<bullet[i]->getY()<<"xy\n";
                             score_wordPressed++;
                             score_pool += enemy[bullet[i]->getID()]->getHp() * getRandomNumber(80,100);
                             removeEnemy(bullet[i]->getID());
-
                         }
                         removeBullet(i);
                     }
@@ -588,7 +554,7 @@ public:
             SDL_DestroyTexture(boom_animation[i]);
             boom_animation[i] = NULL;
         }
-        key_now->clearEntity();
+        key_pen->clearEntity();
         score_pen->clearEntity();
         score_board->clearEntity();
         boom_pen->clearEntity();

@@ -1,9 +1,5 @@
-#ifndef NEWWORD__CPP
-#define NEWWORD__CPP
 #include "NewWord.h"
-#include <bits/stdc++.h>
 #include <SDL.h>
-using namespace std;
 
 string raw1 = "bcdghklmnprstvxfj";
 string raw2 = "aeiou";
@@ -55,10 +51,6 @@ string getNewWord(int difficulty){
         }
     }
     else if(difficulty == 2){
-        //int temp = getRandomNumber(3,4);
-        //for(int i=1;i<=temp;++i){
-        //    s += raw3[rand() % raw3.size()];
-        //}
         s += raw1[rand() % raw1.size()];
         s += raw2[rand() % raw2.size()];
         s += raw3[rand() % raw3.size()];
@@ -76,5 +68,3 @@ string getNewWord(int difficulty){
 }
 
 
-
-#endif
