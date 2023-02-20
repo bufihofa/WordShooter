@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
 
     //Open Game Menu -> GameMenu.cpp
     openMenu(window,renderer, SCREEN_WIDTH, SCREEN_HEIGHT);
-    quitSDL(window, renderer);
+    //quitSDL(window, renderer);
     return 0;
 }
 

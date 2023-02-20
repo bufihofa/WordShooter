@@ -92,7 +92,7 @@ public:
     ~Enemy(){
 
     }
-    Enemy(double x, double y, double _x, double _y, string path, double speed, double scale, SDL_Renderer* renderer, double angle){
+    Enemy(double x, double y, double _x, double _y, string path, double speed, double scale, SDL_Renderer* renderer, double angle, int diffMode){
         setXY(_x, _y);
         setToXY(x, y);
         setRenderer(renderer);
@@ -103,7 +103,7 @@ public:
         setScale(scale);
         this->setAngle(angle);
         this->setDelta();
-        string s = getNewWord(1);
+        string s = getNewWord(diffMode);
         //cout<<s<<"\n";
         hp = s.size();
         for(int i=0;i<s.size();++i){
@@ -228,7 +228,14 @@ private:
     int time_2 = 1;
     int time_3 = 1;
     int _sp = 400;
+    int diffMode = 1;
 public:
+    void setDiff(int diffMode){
+        this->diffMode = diffMode;
+    }
+    int getDiff(){
+        return this->diffMode;
+    }
     double getShootAngle(double x, double y){
 
         if(x>600) return 360 - atan((750.0-y)/(x-600.0))* 57.3;
@@ -255,7 +262,8 @@ public:
             time = time-1000+time_2*2;
             time_2++;
             _sp+=50;
-            this->addEnemy(_sp % 1000, 0, "resources/HardShip.png", 1.5, 0.3, 180);
+            //ADD ENEMY per second
+            this->addEnemy(_sp % 1000, 0, "resources/HardShip.png", 0.7+(getDiff()/2.0), 0.3, 180);
         }
         score += score_pool*0.02;
         score_pool *= 0.98;
@@ -377,13 +385,14 @@ public:
         }
     }
     void removeEnemy(int id){
+        playBoomAnimation(enemy[id]->getX(), enemy[id]->getY());
         enemy_status[id] = 0;
         if(enemy[id] != NULL) enemy[id]->clearEntity();
         numberOfEnemy--;
     }
     void addEnemy(double _x, double _y, string path, double speed, double scale, double angle){
         int id = findEnemyEmpty();
-        enemy[id] = new Enemy(_x, 750, _x, _y, path, speed, scale, getRenderer(), angle);
+        enemy[id] = new Enemy(_x, 750, _x, _y, path, speed, scale, getRenderer(), angle, getDiff());
         enemy_status[id] = 1;
         numberOfEnemy++;
     }
@@ -544,7 +553,7 @@ public:
                         if(!enemy[bullet[i]->getID()]->isAlive()) {
                             shootXP(bullet[i]->getX(), bullet[i]->getY()-5);
 
-                            playBoomAnimation(bullet[i]->getX(), bullet[i]->getY());
+                            //playBoomAnimation(bullet[i]->getX(), bullet[i]->getY());
                             //cout<<bullet[i]->getX()<<" "<<bullet[i]->getY()<<"xy\n";
                             score_wordPressed++;
                             score_pool += enemy[bullet[i]->getID()]->getHp() * getRandomNumber(80,100);

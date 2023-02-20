@@ -9,9 +9,10 @@ private:
     bool pause = false;
     SDL_Window *window;
     SDL_Renderer *renderer;
+    int diffMode = 1;
 public:
     Game();
-    Game(SDL_Window* window, SDL_Renderer* renderer);
+    Game(SDL_Window* window, SDL_Renderer* renderer, int diffMode);
 
     void init(const char* title, int x, int y, int h, int w);
 
@@ -25,8 +26,12 @@ public:
     void conti(){this->pause = false;}
     void pau(){this->pause = true;}
 
-
-
+    int getDiff(){
+        return diffMode;
+    }
+    void setDiff(int diffMode){
+        this->diffMode = diffMode;
+    }
     void gamePause();
     void gameContinue();
     void gameStop();

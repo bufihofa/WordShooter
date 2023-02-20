@@ -12,12 +12,16 @@ double startTime = 0;
 
 moveEntity point;
 
-Game::Game(SDL_Window* window, SDL_Renderer* renderer){
+Game::Game(SDL_Window* window, SDL_Renderer* renderer, int diffMode){
+
+    this->setDiff(diffMode);
+
     this->renderer = renderer;
     this->window = window;
 
     bgr = Entity(0, 0, "resources/bvb.jpg", renderer);
     player = Player(0, 0, "resources/Ship_1.png", renderer);
+    player.setDiff(diffMode);
 
     player.setAC(1200/2, 750);
     player.setScale(0.3);
@@ -91,10 +95,10 @@ void Game::handleEvents(){
 
     if(!this->isPause() && event.type == SDL_KEYDOWN){
         //cout<<char(event.key.keysym.sym)<<" "<<event.type<<"\n";
-        if(event.key.keysym.sym == SDLK_SPACE){
-            player.addEnemy(SDL_GetTicks()%1000, 0, "resources/HardShip.png", 1.5, 0.3, 180);
-        }
-        if(event.key.keysym.sym >= SDLK_a && event.key.keysym.sym <= SDLK_z){
+        //if(event.key.keysym.sym == SDLK_SPACE){
+        //    player.addEnemy(SDL_GetTicks()%1000, 0, "resources/HardShip.png", 1.5, 0.3, 180);
+        //}
+        if((event.key.keysym.sym >= SDLK_a && event.key.keysym.sym <= SDLK_z) || (event.key.keysym.sym >= SDLK_0 && event.key.keysym.sym <= SDLK_9)){
             player.shootBullet(event.key.keysym.sym);
 
         }

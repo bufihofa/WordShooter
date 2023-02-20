@@ -104,7 +104,9 @@ public:
         hardMode.render();
         backButton.render();
     }
+
 };
+
 class MainMenu{
 private:
     SDL_Texture* background;
@@ -166,8 +168,8 @@ public:
         settingButton.render();
         guideButton.render();
         quitButton.render();
-
     }
+
 
 };
 void openMenu(SDL_Window* window, SDL_Renderer* renderer, int _width, int _height);

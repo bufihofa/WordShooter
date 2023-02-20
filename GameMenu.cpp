@@ -48,8 +48,8 @@ void openMenu(SDL_Window* window, SDL_Renderer* renderer, int _width, int _heigh
                     }
                     else if(temp == 4){
                         //quit
-                        ev.type = SDL_QUIT;
-                        return;
+                        //quitSDL(window, renderer);
+                        running = false;
                     }
                 }
             }
@@ -61,13 +61,20 @@ void openMenu(SDL_Window* window, SDL_Renderer* renderer, int _width, int _heigh
                 else if(ev.type == SDL_MOUSEBUTTONDOWN){
                     int temp = playMenu->checkClick(ev.button.x , ev.button.y);
                     if(temp == 1){
+                        menuIsOpen = 0;
+                        running = false;
                         newGame(window, renderer, 1);
+
                     }
                     else if(temp == 2){
-                        //medium
+                        menuIsOpen = 0;
+                        running = false;
+                        newGame(window, renderer, 2);
                     }
                     else if(temp == 3){
-                        //hard
+                        menuIsOpen = 0;
+                        running = false;
+                        newGame(window, renderer, 3);
                     }
                     else if(temp == 4){
                         //back
@@ -77,7 +84,7 @@ void openMenu(SDL_Window* window, SDL_Renderer* renderer, int _width, int _heigh
             }
         }
 
-
+        if(!running) break;
         mainMenu->render(renderer);
         if(menuIsOpen == 1){
             playMenu->render(renderer);
@@ -90,6 +97,7 @@ void openMenu(SDL_Window* window, SDL_Renderer* renderer, int _width, int _heigh
         frameTime = SDL_GetTicks() - frameTime;
         this_thread::sleep_for(chrono::milliseconds(frameDelay-frameTime));
     }
+
 }
 
 

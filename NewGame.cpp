@@ -29,7 +29,7 @@ void renderThreadFunc(){
 */
 void newGame(SDL_Window* window, SDL_Renderer* renderer, int diffMode){
 
-    game = new Game(window, renderer);
+    game = new Game(window, renderer, diffMode);
 
     bool render = true;
     int UPS = 60;

@@ -7,6 +7,8 @@ using namespace std;
 
 string raw1 = "bcdghklmnprstvxfj";
 string raw2 = "aeiou";
+string raw3 = "abcdefghijklmnopqrstuvwxyz";
+string raw4 = "abcdefghijklmnopqrstuvwxyz0123456789";
 int i = 0;
 int getRandomNumber(int _min, int _max){
     return rand() % ( _max - _min +1) + _min;
@@ -50,6 +52,23 @@ string getNewWord(int difficulty){
             case 10: s+='g'; break;
             case 11: s+='x'; break;
             case 12: s+='d'; break;
+        }
+    }
+    else if(difficulty == 2){
+        //int temp = getRandomNumber(3,4);
+        //for(int i=1;i<=temp;++i){
+        //    s += raw3[rand() % raw3.size()];
+        //}
+        s += raw1[rand() % raw1.size()];
+        s += raw2[rand() % raw2.size()];
+        s += raw3[rand() % raw3.size()];
+        s += raw3[rand() % raw3.size()];
+
+    }
+    else if(difficulty == 3){
+        int temp = getRandomNumber(3,5);
+        for(int i=1;i<=temp;++i){
+            s += raw4[rand() % raw4.size()];
         }
     }
     return s;
